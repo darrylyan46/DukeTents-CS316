@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block heading %} Log in {% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+<body>
+<div>
+    <form action="{{  url_for('login') }}" method="POST">
+        <fieldset>
+            Username: <input type="text" name="username"><br>
+            <input type="submit">
+        </fieldset>
+        Or sign up <a href="signup.html">here</a>
+    </form>
+</div>
+</body>
+</html>
+{% endblock %}

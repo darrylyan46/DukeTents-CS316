@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 import models
 import forms
@@ -12,6 +12,17 @@ db = SQLAlchemy(app, session_options={'autocommit': False})
 def all_drinkers():
     drinkers = db.session.query(models.Drinker).all()
     return render_template('all-drinkers.html', drinkers=drinkers)
+
+@app.route('/login')
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    else:
+        return render_template('tentprofile.html')
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
 
 @app.route('/drinker/<name>')
 def drinker(name):

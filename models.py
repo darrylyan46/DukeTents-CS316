@@ -3,7 +3,7 @@ from app import db
 
 class Tent(db.Model):
     __tablename__ = 'tent'
-    id = db.Column('id', db.Integer(20), primary_key=True)
+    id = db.Column('id', db.Integer, primary_key=True)
     name = db.Column('name', db.String(20))
     color = db.Column('color', db.String(5))
     member = orm.relationship('memberInTent')
