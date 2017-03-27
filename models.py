@@ -1,12 +1,13 @@
 from sqlalchemy import sql, orm
 from app import db
 
-class Drinker(db.Model):
-    __tablename__ = 'drinker'
-    name = db.Column('name', db.String(20), primary_key=True)
-    address = db.Column('address', db.String(20))
-    likes = orm.relationship('Likes')
-    frequents = orm.relationship('Frequents')
+class Tent(db.Model):
+    __tablename__ = 'tent'
+    id = db.Column('id', db.Integer(20), primary_key=True)
+    name = db.Column('name', db.String(20))
+    color = db.Column('color', db.String(5))
+    member = orm.relationship('memberInTent')
+    '''
     @staticmethod
     def edit(old_name, name, address, beers_liked, bars_frequented):
         try:
@@ -29,43 +30,43 @@ class Drinker(db.Model):
         except Exception as e:
             db.session.rollback()
             raise e
+    '''
 
-class Beer(db.Model):
-    __tablename__ = 'beer'
+class Member(db.Model):
+    __tablename__ = 'member'
+    id = db.Column('id', db.Integer, primary_key=True)
+    name = db.Column('name', db.String(20))
+    hoursLogged = db.Column('hoursLogged', db.Integer)
+    gamesAttended = db.Column('gamesAttended', db.Integer)
+    permissions = db.Column('permissions', db.Boolean)
+    tent = orm.relationship('memberInTent')
+    attends = orm.relationship('attends')
+
+class Availability(db.Model):
+    __tablename__ = 'availability'
+    memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
+                         primary_key=True)
+    date = db.Column('date', db.String(20), primary_key=True)
+    time = db.Column('time', db.String(20), primary_key=True)
+    shift = db.Column('shift', db.Boolean)
+
+class AttendanceGames(db.Model):
+    __tablename__ = 'attendanceGames'
     name = db.Column('name', db.String(20), primary_key=True)
-    brewer = db.Column('brewer', db.String(20))
+    date = db.Column('date', db.String(20))
+    time = db.Column('time', db.String(20))
+    member = orm.relationship('attends')
 
-class Bar(db.Model):
-    __tablename__ = 'bar'
-    name = db.Column('name', db.String(20), primary_key=True)
-    address = db.Column('address', db.String(20))
-    serves = orm.relationship('Serves')
+class MemberInTent(db.Model):
+    __tablename__ = 'memberInTent'
+    tentID = db.Column('tentID', db.Integer, db.ForeignKey('tent.id'),
+                       primary_key=True)
+    memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
+                         primary_key=True)
 
-class Likes(db.Model):
-    __tablename__ = 'likes'
-    drinker = db.Column('drinker', db.String(20),
-                        db.ForeignKey('drinker.name'),
-                        primary_key=True)
-    beer = db.Column('beer', db.String(20),
-                     db.ForeignKey('beer.name'),
-                     primary_key=True)
-
-class Serves(db.Model):
-    __tablename__ = 'serves'
-    bar = db.Column('bar', db.String(20),
-                    db.ForeignKey('bar.name'),
-                    primary_key=True)
-    beer = db.Column('beer', db.String(20),
-                     db.ForeignKey('beer.name'),
-                     primary_key=True)
-    price = db.Column('price', db.Float())
-
-class Frequents(db.Model):
-    __tablename__ = 'frequents'
-    drinker = db.Column('drinker', db.String(20),
-                        db.ForeignKey('drinker.name'),
-                        primary_key=True)
-    bar = db.Column('bar', db.String(20),
-                    db.ForeignKey('bar.name'),
-                    primary_key=True)
-    times_a_week = db.Column('times_a_week', db.Integer())
+class Attends(db.Model):
+    __tablename__ = 'attends'
+    memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
+                         primary_key=True)
+    gameName = db.Column('gameName', db.String(20), db.ForeignKey('attendanceGames.name'),
+                         primary_key=True)
