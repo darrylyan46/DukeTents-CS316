@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block heading %} Sign Up {% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<body>
+<form action="{{ url_for('signup') }}" method="post">
+  <fieldset>
+    <legend>Sign Up:</legend>
+    Username:<br>
+    <input type="text" name="username"><br><br>
+    Tent ID:<br>
+    <input type="text" name="tentid">
+    <br><br>
+    <input type="checkbox" name="captain" value="captain"> Captain?
+    <br><br><br>
+    <input type="submit" value="submit">
+  </fieldset>
+</form>
+</body>
+</html>
+{% endblock %}

@@ -6,7 +6,7 @@ class Tent(db.Model):
     id = db.Column('id', db.Integer, primary_key=True)
     name = db.Column('name', db.String(20))
     color = db.Column('color', db.String(5))
-    member = orm.relationship('memberInTent')
+    member = orm.relationship('MemberInTent')
     '''
     @staticmethod
     def edit(old_name, name, address, beers_liked, bars_frequented):
@@ -39,23 +39,23 @@ class Member(db.Model):
     hoursLogged = db.Column('hoursLogged', db.Integer)
     gamesAttended = db.Column('gamesAttended', db.Integer)
     permissions = db.Column('permissions', db.Boolean)
-    tent = orm.relationship('memberInTent')
-    attends = orm.relationship('attends')
+    tent = orm.relationship('MemberInTent')
+    attends = orm.relationship('Attends')
 
 class Availability(db.Model):
     __tablename__ = 'availability'
     memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
                          primary_key=True)
-    date = db.Column('date', db.String(20), primary_key=True)
-    time = db.Column('time', db.String(20), primary_key=True)
+    date = db.Column('date', db.String(30), primary_key=True)
+    time = db.Column('time', db.String(30), primary_key=True)
     shift = db.Column('shift', db.Boolean)
 
 class AttendanceGames(db.Model):
     __tablename__ = 'attendanceGames'
-    name = db.Column('name', db.String(20), primary_key=True)
-    date = db.Column('date', db.String(20))
-    time = db.Column('time', db.String(20))
-    member = orm.relationship('attends')
+    name = db.Column('name', db.String(30), primary_key=True)
+    date = db.Column('date', db.String(30))
+    time = db.Column('time', db.String(30))
+    member = orm.relationship('Attends')
 
 class MemberInTent(db.Model):
     __tablename__ = 'memberInTent'

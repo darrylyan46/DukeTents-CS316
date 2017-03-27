@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% block heading %}All Tents{% endblock %}
+{% block content %}
+    <h3><a href={{ url_for('login') }}>Login</a></h3>
+<ul>
+  {% for tent in tents %}
+  <li>{{tent.name}}</li>
+  {% endfor %}
+</ul>
+<hr/>
+<p>{{tents|length}} tent{{tents|length|pluralize}}
+  found in the database.</p>
+{% endblock %}

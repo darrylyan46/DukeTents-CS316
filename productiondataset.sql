@@ -1,8 +1,8 @@
 -- Create tables specified in E/R diagram
 
 CREATE TABLE Tent
-(tentID INTEGER PRIMARY KEY NOT NULL, 
- tentName VARCHAR(30) NOT NULL, 
+(id INTEGER PRIMARY KEY NOT NULL,
+ name VARCHAR(30) NOT NULL,
  color varchar(5) NOT NULL);
 
 -- Use NULLS approach for ISA relationship
@@ -10,8 +10,8 @@ CREATE TABLE Tent
 CREATE TABLE Member
 (id INTEGER PRIMARY KEY NOT NULL, 
  name VARCHAR(30) NOT NULL,
- hours_logged INTEGER NOT NULL,
- games_attended INTEGER NOT NULL, 
+ hoursLogged INTEGER NOT NULL,
+ gamesAttended INTEGER NOT NULL,
  permissions BOOLEAN);
 
 CREATE TABLE Member_In_Tent

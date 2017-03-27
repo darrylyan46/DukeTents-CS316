@@ -9,9 +9,9 @@ app.config.from_object('config')
 db = SQLAlchemy(app, session_options={'autocommit': False})
 
 @app.route('/')
-def all_drinkers():
-    drinkers = db.session.query(models.Drinker).all()
-    return render_template('all-drinkers.html', drinkers=drinkers)
+def all_tents():
+    tents = db.session.query(models.Tent).all()
+    return render_template('all-tents.html', tents=tents)
 
 @app.route('/login')
 def login():
