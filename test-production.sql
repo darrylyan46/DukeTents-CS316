@@ -16,25 +16,25 @@ CREATE TABLE Member
 
 CREATE TABLE Member_In_Tent
 (tentID INTEGER NOT NULL REFERENCES Tent(id),
- m_id INTEGER NOT NULL REFERENCES Member(id),
- PRIMARY KEY (tentID, m_id));
+ memberID INTEGER NOT NULL REFERENCES Member(id),
+ PRIMARY KEY (tentID, memberID));
 
 CREATE TABLE Availability
-(m_id INTEGER NOT NULL REFERENCES Member(id),
- shift_date VARCHAR(30) NOT NULL, 
- shift_start_time VARCHAR(30), 
+(memberID INTEGER NOT NULL REFERENCES Member(id),
+ date VARCHAR(30) NOT NULL,
+ time VARCHAR(30),
  shift BOOLEAN,
- PRIMARY KEY (m_id, shift_date, shift_start_time));
+ PRIMARY KEY (memberID, date, time));
 
 CREATE TABLE AttendanceGames
 (name VARCHAR(30) NOT NULL PRIMARY KEY, 
- game_date VARCHAR(30) NOT NULL, 
- game_time VARCHAR(30) NOT NULL);
+ date VARCHAR(30) NOT NULL,
+ time VARCHAR(30) NOT NULL);
 
 CREATE TABLE Member_Attends_Games
-(m_id INTEGER NOT NULL REFERENCES Member(id), 
-game_name VARCHAR(30) NOT NULL REFERENCES AttendanceGames(name),
-PRIMARY KEY (m_id, game_name));
+(memberID INTEGER NOT NULL REFERENCES Member(id),
+gameName VARCHAR(30) NOT NULL REFERENCES AttendanceGames(name),
+PRIMARY KEY (memberID, gameName));
 
 -- Begin production dataset
 INSERT INTO Tent VALUES (0, 'apple', 'white'); 

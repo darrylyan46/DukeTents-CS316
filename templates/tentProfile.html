@@ -16,6 +16,14 @@
     <script src={{ url_for('static', filename='js/scheduler.js') }}></script>
 </head>
 <body>
+    <div>
+    <ul>
+        Here are the list of tenters:
+        {% for member in tenters %}
+        <li> <a href={{ url_for('userProfile', user=member.memberID) }}> {{ member.memberID }} </a> </li>
+        {% endfor %}
+    </ul>
+    </div>
     <div id='calendar'></div>
 </body>
 <script>

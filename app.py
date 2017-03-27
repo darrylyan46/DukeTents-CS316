@@ -28,7 +28,10 @@ def signup():
 def tentProfile(tentid):
     tent = db.session.query(models.Tent)\
         .filter(models.Tent.id == tentid).one()
-    return render_template('tentProfile.html', tent=tent)
+    # DEBUG PLS
+    members = db.session.query(models.Member_In_Tent)\
+        .filter(models.Member_In_Tent.tentID == tentid)
+    return render_template('tentProfile.html', tent=tent, tenters=members)
 
 @app.route('/edit-drinker/<name>', methods=['GET', 'POST'])
 def edit_drinker(name):
