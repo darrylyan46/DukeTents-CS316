@@ -18,17 +18,17 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
     else:
-        return render_template('tentprofile.html')
+        return render_template('tentProfile.html')
 
 @app.route('/signup')
 def signup():
     return render_template('signup.html')
 
-@app.route('/drinker/<name>')
-def drinker(name):
-    drinker = db.session.query(models.Drinker)\
-        .filter(models.Drinker.name == name).one()
-    return render_template('drinker.html', drinker=drinker)
+@app.route('/tentProfile/<tentid>')
+def tentProfile(tentid):
+    tent = db.session.query(models.Tent)\
+        .filter(models.Tent.id == tentid).one()
+    return render_template('tentProfile.html', tent=tent)
 
 @app.route('/edit-drinker/<name>', methods=['GET', 'POST'])
 def edit_drinker(name):

@@ -6,7 +6,7 @@ class Tent(db.Model):
     id = db.Column('id', db.Integer, primary_key=True)
     name = db.Column('name', db.String(20))
     color = db.Column('color', db.String(5))
-    member = orm.relationship('MemberInTent')
+    member = orm.relationship('Member_In_Tent')
     '''
     @staticmethod
     def edit(old_name, name, address, beers_liked, bars_frequented):
@@ -39,8 +39,8 @@ class Member(db.Model):
     hoursLogged = db.Column('hoursLogged', db.Integer)
     gamesAttended = db.Column('gamesAttended', db.Integer)
     permissions = db.Column('permissions', db.Boolean)
-    tent = orm.relationship('MemberInTent')
-    attends = orm.relationship('Attends')
+    tent = orm.relationship('Member_In_Tent')
+    attends = orm.relationship('Member_Attends_Games')
 
 class Availability(db.Model):
     __tablename__ = 'availability'
@@ -55,17 +55,17 @@ class AttendanceGames(db.Model):
     name = db.Column('name', db.String(30), primary_key=True)
     date = db.Column('date', db.String(30))
     time = db.Column('time', db.String(30))
-    member = orm.relationship('Attends')
+    member = orm.relationship('Member_Attends_Games')
 
-class MemberInTent(db.Model):
-    __tablename__ = 'memberInTent'
+class Member_In_Tent(db.Model):
+    __tablename__ = 'member_in_tent'
     tentID = db.Column('tentID', db.Integer, db.ForeignKey('tent.id'),
                        primary_key=True)
     memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
                          primary_key=True)
 
-class Attends(db.Model):
-    __tablename__ = 'attends'
+class Member_Attends_Games(db.Model):
+    __tablename__ = 'member_attends_games'
     memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
                          primary_key=True)
     gameName = db.Column('gameName', db.String(20), db.ForeignKey('attendanceGames.name'),

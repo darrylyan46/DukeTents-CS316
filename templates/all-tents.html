@@ -4,7 +4,7 @@
     <h3><a href={{ url_for('login') }}>Login</a></h3>
 <ul>
   {% for tent in tents %}
-  <li>{{tent.name}}</li>
+  <li><a href={{ url_for('tentProfile', tentid=tent.id)}}> {{tent.name}} </a></li>
   {% endfor %}
 </ul>
 <hr/>

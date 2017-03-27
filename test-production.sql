@@ -15,7 +15,7 @@ CREATE TABLE Member
  permissions BOOLEAN);
 
 CREATE TABLE Member_In_Tent
-(tentID INTEGER NOT NULL REFERENCES Tent(tentID), 
+(tentID INTEGER NOT NULL REFERENCES Tent(id),
  m_id INTEGER NOT NULL REFERENCES Member(id),
  PRIMARY KEY (tentID, m_id));
 
@@ -24,7 +24,7 @@ CREATE TABLE Availability
  shift_date VARCHAR(30) NOT NULL, 
  shift_start_time VARCHAR(30), 
  shift BOOLEAN,
- PRIMARY KEY (m_id, shift_date, shift_time));
+ PRIMARY KEY (m_id, shift_date, shift_start_time));
 
 CREATE TABLE AttendanceGames
 (name VARCHAR(30) NOT NULL PRIMARY KEY, 
