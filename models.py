@@ -40,8 +40,8 @@ class Member(db.Model):
     __tablename__ = 'member'
     id = db.Column('id', db.Integer, primary_key=True)
     name = db.Column('name', db.String(20))
-    hoursLogged = db.Column('hoursLogged', db.Integer)
-    gamesAttended = db.Column('gamesAttended', db.Integer)
+    hours_Logged = db.Column('hours_logged', db.Integer)
+    games_Attended = db.Column('games_attended', db.Integer)
     permissions = db.Column('permissions', db.Boolean)
     tent = orm.relationship('Member_In_Tent')
     attends = orm.relationship('Member_Attends_Games')
@@ -49,8 +49,8 @@ class Member(db.Model):
     def __init__(self, name, permissions):
         self.name = name
         self.permissions = permissions
-        self.hoursLogged = 0
-        self.gamesAttended = 0
+        self.hours_Logged = 0
+        self.games_Attended = 0
 
 
 class Availability(db.Model):
@@ -70,9 +70,9 @@ class AttendanceGames(db.Model):
 
 class Member_In_Tent(db.Model):
     __tablename__ = 'member_in_tent'
-    tentID = db.Column('tentID', db.Integer, db.ForeignKey('tent.id'),
+    tentID = db.Column('tentid', db.Integer, db.ForeignKey('tent.id'),
                        primary_key=True)
-    memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
+    memberID = db.Column('memberid', db.Integer, db.ForeignKey('member.id'),
                          primary_key=True)
 
 class Member_Attends_Games(db.Model):

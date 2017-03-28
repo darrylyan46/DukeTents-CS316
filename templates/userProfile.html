@@ -13,11 +13,22 @@
     <script src={{ url_for('static', filename='js/scheduler.js') }}></script>
 </head>
 <body>
-    <h1> Welcome {% for user in user %} {{ user.name }}! </h1>
+    <h1> Welcome {% for u in user %} {{ u.name }}! </h1>
     <br> <br>
-    <h3> Hours logged: {{ user.hoursLogged }}</h3>
-    <h3> Games attended: {{ user.gamesAttended }}</h3>
+    <h3> Hours logged: {{ u.hours_Logged | string }}</h3>
+    <h3> Games attended: {{ u.games_Attended | string }}</h3>
     {% endfor %}
     <div id='calendar'></div>
 </body>
+<script>
+    $(document).ready(function() {
+
+    // page is now ready, initialize the calendar...
+
+    $('#calendar').fullCalendar({
+        schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives'
+        // put your options and callbacks here
+    })
+    });
+</script>
 </html>

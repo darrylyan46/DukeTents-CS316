@@ -20,7 +20,7 @@
     <ul>
         Here are the list of tenters:
         {% for member in tenters %}
-            <li> <a href="{{ url_for('userProfile', userid=member.memberID) }}"> {{ member.name }} </a> </li>
+            <li> <a href="{{ url_for('userProfile', userid=member.name) }}"> {{ member.name }} </a> </li>
         {% endfor %}
     </ul>
     </div>

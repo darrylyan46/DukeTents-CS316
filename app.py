@@ -46,12 +46,12 @@ def tentProfile(tentid):
     tent = db.session.execute('SELECT * FROM Tent WHERE id = :id',
                               dict(id=tentid))
     members = db.session.execute('SELECT * FROM Member_In_Tent t, Member m WHERE t.tentID = :id AND m.id = t.memberID'
-                                 , dict(id=tentid))
+                                , dict(id=tentid))
     return render_template('tentProfile.html', tent=tent, tenters=members)
 
 @app.route('/userProfile/<userid>')
 def userProfile(userid):
-    user = db.session.execute('SELECT * FROM Tent WHERE id = :id',
+    user = db.session.execute('SELECT * FROM Member WHERE name = :id',
                               dict(id=userid))
     return render_template('userProfile.html', user=user)
 
