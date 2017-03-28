@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-{% block heading %} {{ tent.name }} Profile {% endblock %}
+{% block heading %} {% for tent in tent %} {{ tent.name }}'s Profile {% endfor %} {% endblock %}
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
@@ -20,7 +20,7 @@
     <ul>
         Here are the list of tenters:
         {% for member in tenters %}
-        <li> <a href={{ url_for('userProfile', user=member.memberID) }}> {{ member.memberID }} </a> </li>
+            <li> <a href="{{ url_for('userProfile', userid=member.memberID) }}"> {{ member.name }} </a> </li>
         {% endfor %}
     </ul>
     </div>

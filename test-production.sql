@@ -20,15 +20,9 @@ CREATE TABLE Member_In_Tent
  PRIMARY KEY (tentID, memberID));
 
 CREATE TABLE Availability
-<<<<<<< HEAD
-(m_id INTEGER NOT NULL REFERENCES Member(id),
- shift_date VARCHAR(30) NOT NULL, 
- shift_time VARCHAR(30), 
-=======
 (memberID INTEGER NOT NULL REFERENCES Member(id),
  date VARCHAR(30) NOT NULL,
  time VARCHAR(30),
->>>>>>> b6d15639b26c127758c4b34224df7f16e6a32467
  shift BOOLEAN,
  PRIMARY KEY (memberID, date, time));
 
@@ -69,8 +63,8 @@ INSERT INTO Member VALUES (15, 'Percy', 3, 2, 'f');
 INSERT INTO Member VALUES (16, 'Quinn', 7, 0, 'f');
 INSERT INTO Member VALUES (17, 'Rachel', 2, 2, 'f');
 INSERT INTO Member VALUES (18, 'Steve', 1, 1, 'f');
-INSERT INTO Member VALUES (19, 'Tyler', 7, 1), 'f';
-INSERT INTO Member VALUES (20, 'Ulysses', 20, 3), 'f';
+INSERT INTO Member VALUES (19, 'Tyler', 7, 1, 'f');
+INSERT INTO Member VALUES (20, 'Ulysses', 20, 3, 'f');
 INSERT INTO Member VALUES (21, 'Vick', 19, 5, 't');
 INSERT INTO Member VALUES (22, 'Wallace', 5, 5, 'f');
 INSERT INTO Member VALUES (23, 'Xavier', 7, 3, 'f');
@@ -447,40 +441,4 @@ INSERT INTO Member_Attends_Games VALUES (25, 'NCStateMens');
 INSERT INTO Member_Attends_Games VALUES (25, 'ClemsonWomens'); 
 INSERT INTO Member_Attends_Games VALUES (25, 'PittMens'); 
 INSERT INTO Member_Attends_Games VALUES (25, 'UNCWomens'); 
-INSERT INTO Member_Attends_Games VALUES (25, 'VirginiaTechWomens'); 
-
--- DYNAMIC QUERIES
-
--- Trigger for updating number of games attended for each member
--- after update or insert on number of games attended.
-CREATE FUNCTION TF_update_gamesAttended_ref() RETURNS TRIGGER AS $$
- BEGIN
-	UPDATE Member
-	SET games_attended = games_attended + 1
-	WHERE NEW.m_id = id;
-	RETURN NEW;
- END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER TG_update_gamesAttended
- AFTER INSERT ON Member_Attends_Games
- FOR EACH ROW
- EXECUTE PROCEDURE TF_update_gamesAttended_ref();
-
--- Trigger for updating Member hours logged after
--- update or insert on Availability
-CREATE FUNCTION TF_update_hoursLogged_ref() RETURNS TRIGGER AS $$
- BEGIN
- 	IF NEW.shift = 't' THEN
-		UPDATE Member
-		SET hours_logged = hours_logged + 1
-		WHERE NEW.m_id = id;
-	END IF;
-	RETURN NEW;
- END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER TG_update_hoursLogged
-AFTER UPDATE ON Availability
-FOR EACH ROW
-EXECUTE PROCEDURE TF_update_hoursLogged_ref();
+INSERT INTO Member_Attends_Games VALUES (25, 'VirginiaTechWomens');

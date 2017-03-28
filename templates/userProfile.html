@@ -6,11 +6,18 @@
     <!-- Stylesheets and JS for FullCalendar support -->
     <link rel="stylesheet" href={{ url_for('static', filename='css/fullcalendar.css') }}>
     <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
-    <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
+    <link rel="stylesheet" href={{ url_for('static', filename='scheduler.css') }}>
     <script src={{ url_for('static', filename='js/moment.js') }}></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
+    <script src={{ url_for('static', filename='js/scheduler.js') }}></script>
 </head>
 <body>
-
+    <h1> Welcome {% for user in user %} {{ user.name }}! </h1>
+    <br> <br>
+    <h3> Hours logged: {{ user.hoursLogged }}</h3>
+    <h3> Games attended: {{ user.gamesAttended }}</h3>
+    {% endfor %}
+    <div id='calendar'></div>
 </body>
 </html>

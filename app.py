@@ -43,13 +43,17 @@ def signup():
 
 @app.route('/tentProfile/<tentid>')
 def tentProfile(tentid):
-    tent = db.session.query(models.Tent)\
-        .filter(models.Tent.id == tentid).one()
-    # DEBUG PLS
-    members = db.session.query(models.Member_In_Tent)\
-        .filter(models.Member_In_Tent.tentID == tentid)
+    tent = db.session.execute('SELECT * FROM Tent WHERE id = :id',
+                              dict(id=tentid))
+    members = db.session.execute('SELECT * FROM Member_In_Tent t, Member m WHERE t.tentID = :id AND m.id = t.memberID'
+                                 , dict(id=tentid))
     return render_template('tentProfile.html', tent=tent, tenters=members)
 
+@app.route('/userProfile/<userid>')
+def userProfile(userid):
+    user = db.session.execute('SELECT * FROM Tent WHERE id = :id',
+                              dict(id=userid))
+    return render_template('userProfile.html', user=user)
 
 
 @app.route('/edit-drinker/<name>', methods=['GET', 'POST'])
