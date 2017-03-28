@@ -7,16 +7,34 @@
 <form action="{{ url_for('signup') }}" method="post">
   <fieldset>
     <legend>Sign Up:</legend>
-    Username:<br>
+    Full Name:<br>
     <input type="text" name="username"><br><br>
     Tent ID:<br>
     <input type="text" name="tentid">
     <br><br>
-    <input type="checkbox" name="captain" value="captain"> Captain?
-    <br><br><br>
-    <input type="submit" value="submit">
+    <input type="checkbox" onclick="isCaptainForm()" id="captain" name="captain" value="Captain"> Captain?
+    <br>
+      <div id="ifCaptain" style="display:none"> <br>
+          What color is your tent? <br>
+          <input type="radio" name="color" value="Black"> Black <br>
+          <input type="radio" name="color" value="Blue">  Blue  <br>
+          <input type="radio" name="color" value="White"> White <br> <br>
+          What do you want to name your tent? <br>
+          <input type="text" name="tentName" placeholder="Enter your tent name"> <br>
+      </div>
+    <input type="submit" value="Submit">
   </fieldset>
 </form>
 </body>
+<script type="text/javascript">
+    function isCaptainForm() {
+        if (document.getElementById("captain").checked) {
+            document.getElementById("ifCaptain").style.display = 'block';
+        }
+        else {
+            document.getElementById("ifCaptain").style.display = 'none';
+        }
+    }
+</script>
 </html>
 {% endblock %}

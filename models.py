@@ -7,6 +7,10 @@ class Tent(db.Model):
     name = db.Column('name', db.String(20))
     color = db.Column('color', db.String(5))
     member = orm.relationship('Member_In_Tent')
+
+    def __init__(self, name, color):
+        self.name = name
+        self.color = color
     '''
     @staticmethod
     def edit(old_name, name, address, beers_liked, bars_frequented):
@@ -41,6 +45,13 @@ class Member(db.Model):
     permissions = db.Column('permissions', db.Boolean)
     tent = orm.relationship('Member_In_Tent')
     attends = orm.relationship('Member_Attends_Games')
+
+    def __init__(self, name, permissions):
+        self.name = name
+        self.permissions = permissions
+        self.hoursLogged = 0
+        self.gamesAttended = 0
+
 
 class Availability(db.Model):
     __tablename__ = 'availability'

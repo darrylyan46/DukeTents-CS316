@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
+import psycopg2
 import models
 import forms
 
@@ -20,9 +21,25 @@ def login():
     else:
         return render_template('tentProfile.html')
 
-@app.route('/signup')
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    return render_template('signup.html')
+    if request.method == 'GET':
+        return render_template('signup.html')
+    elif request.method == 'POST':
+        name = request.form['username']
+        tent_id = request.form['tentid']
+        isCaptain = request.form['captain']
+        permissions = False
+        if isCaptain == "Captain":
+            tentname = request.form['tentName']
+            color = request.form['color']
+            newTent = models.Tent(tentname, color)
+            db.session.add(newTent)
+            permissions = True
+        newUser = models.Member(name, permissions)
+        db.session.add(newUser)
+        db.session.commit()
+        return render_template(url_for('userProfile', user=newUser.id))
 
 @app.route('/tentProfile/<tentid>')
 def tentProfile(tentid):
@@ -32,6 +49,8 @@ def tentProfile(tentid):
     members = db.session.query(models.Member_In_Tent)\
         .filter(models.Member_In_Tent.tentID == tentid)
     return render_template('tentProfile.html', tent=tent, tenters=members)
+
+
 
 @app.route('/edit-drinker/<name>', methods=['GET', 'POST'])
 def edit_drinker(name):
