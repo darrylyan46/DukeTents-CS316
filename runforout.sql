@@ -8,7 +8,7 @@ CREATE TABLE Tent
 -- Use NULLS approach for ISA relationship
 
 CREATE TABLE Member
-(id INTEGER PRIMARY KEY NOT NULL,
+(id INTEGER PRIMARY KEY NOT NULL, 
  name VARCHAR(30) NOT NULL,
  hours_Logged INTEGER NOT NULL,
  games_Attended INTEGER NOT NULL,
@@ -16,31 +16,25 @@ CREATE TABLE Member
 
 CREATE TABLE Member_In_Tent
 (tentID INTEGER NOT NULL REFERENCES Tent(id),
- memberID INTEGER NOT NULL REFERENCES Member(id),
- PRIMARY KEY (tentID, memberID));
+ m_id INTEGER NOT NULL REFERENCES Member(id),
+ PRIMARY KEY (tentID, m_id));
 
 CREATE TABLE Availability
-<<<<<<< HEAD
 (m_id INTEGER NOT NULL REFERENCES Member(id),
  shift_date VARCHAR(30) NOT NULL, 
  shift_time VARCHAR(30), 
-=======
-(memberID INTEGER NOT NULL REFERENCES Member(id),
- date VARCHAR(30) NOT NULL,
- time VARCHAR(30),
->>>>>>> b6d15639b26c127758c4b34224df7f16e6a32467
  shift BOOLEAN,
- PRIMARY KEY (memberID, date, time));
+ PRIMARY KEY (m_id, shift_date, shift_start_time));
 
 CREATE TABLE AttendanceGames
 (name VARCHAR(30) NOT NULL PRIMARY KEY, 
- date VARCHAR(30) NOT NULL,
- time VARCHAR(30) NOT NULL);
+ game_date VARCHAR(30) NOT NULL, 
+ game_time VARCHAR(30) NOT NULL);
 
 CREATE TABLE Member_Attends_Games
-(memberID INTEGER NOT NULL REFERENCES Member(id),
-gameName VARCHAR(30) NOT NULL REFERENCES AttendanceGames(name),
-PRIMARY KEY (memberID, gameName));
+(m_id INTEGER NOT NULL REFERENCES Member(id), 
+game_name VARCHAR(30) NOT NULL REFERENCES AttendanceGames(name),
+PRIMARY KEY (m_id, game_name));
 
 -- Begin production dataset
 INSERT INTO Tent VALUES (0, 'apple', 'white'); 
@@ -163,7 +157,7 @@ INSERT INTO Availability VALUES (6, '2017-01-21', '10:00-12:00', 'f');
 INSERT INTO Availability VALUES (6, '2017-01-22', '08:00-12:00', 'f'); 
 INSERT INTO Availability VALUES (6, '2017-01-24', '12:00-19:00', 'f'); 
 INSERT INTO Availability VALUES (6, '2017-01-26', '08:00-12:00', 'f'); 
-INSERT INTO Availability VALUES (6, '2017-01-29', '08:00-18:00', 'f'); 
+INSERT INTO Availability VALUES (6, '2017-01-29', '17:00-23:59', 'f'); 
 INSERT INTO Availability VALUES (6, '2017-02-06', '10:00-12:00', 'f'); 
 INSERT INTO Availability VALUES (6, '2017-02-07', '08:00-12:00', 'f'); 
 INSERT INTO Availability VALUES (7, '2017-01-15', '08:00-12:00', 'f'); 
@@ -449,6 +443,9 @@ INSERT INTO Member_Attends_Games VALUES (25, 'PittMens');
 INSERT INTO Member_Attends_Games VALUES (25, 'UNCWomens'); 
 INSERT INTO Member_Attends_Games VALUES (25, 'VirginiaTechWomens'); 
 
+
+
+
 -- DYNAMIC QUERIES
 
 -- Trigger for updating number of games attended for each member
@@ -484,3 +481,58 @@ CREATE TRIGGER TG_update_hoursLogged
 AFTER UPDATE ON Availability
 FOR EACH ROW
 EXECUTE PROCEDURE TF_update_hoursLogged_ref();
+
+-- USER QUERIES
+
+-- Query for member to add times. 
+-- For member with m_id = 2, insert user is free from 8am-11am on February 7, 2017:
+INSERT INTO Availability VALUES(2, '2017-02-07', '08:00-11:00');
+
+-- Get availabilities for every tent member query (for a captain to create a schedule or a member to see availabilities)
+-- For tent with tentID = 1:
+SELECT m.name, a.shift_date, a.shift_time
+FROM Availability a, Member m, Member_In_Tent t
+WHERE a.m_ID = m.ID AND t.tentID = 1 AND m.id = t.m_ID;
+
+-- Captain updates schedule/shift query so a member has a shift (for a captain to notify members of their shifts)
+UPDATE Availability SET shift = 't' WHERE m_id = 3 AND shift_date = '2017-01-29' AND shift_time = '10:00-23:00';
+UPDATE Availability SET shift = 't' WHERE m_id = 4 AND shift_date = '2017-01-29' AND shift_time = '00:00-12:00';
+UPDATE Availability SET shift = 't' WHERE m_id = 5 AND shift_date = '2017-01-29' AND shift_time = '12:00-17:00';
+UPDATE Availability SET shift = 't' WHERE m_id = 6 AND shift_date = '2017-01-29' AND shift_time = '17:00-23:59';
+
+-- Captain gets final shifts query (for a captain to see currently scheduled shifts)
+-- For a captain in tent with tent id = 1:
+SELECT m.name, a.shift_date, a.shift_time
+FROM Availability a, Member m, Member_In_Tent t
+WHERE a.m_id = m.id AND t.tentID = 1 AND m.id = t.m_ID AND shift = 't';
+
+-- Member get his/her shifts query (for a member to see his/her scheduled shifts)
+-- For a member with m_id = 2:
+SELECT m.name, a.shift_date, a.shift_time
+FROM Availability a, Member m
+WHERE a.m_ID = m.id AND m.id = 4 AND shift = 't';
+
+-- Captain get number of games attended for all members query (to find out who’s slacking)
+-- For captain of a tent with tentID = 0:
+SELECT m.name, m.games_attended
+FROM Member m, Member_In_Tent t
+WHERE t.tentID = 4 AND t.m_id = m.id;
+
+-- Member get his/her games attended list query (to see which games he/she attended)
+-- For a member with member ID = 0
+SELECT mag.game_name
+FROM Member_Attends_Games mag
+WHERE mag.m_id = 14;
+
+-- Captain get hours logged list for all members query (to find out who’s slacking)
+-- For captain of a tent with tentID = 0;
+SELECT m.name, m.hours_logged
+FROM Member m, Member_In_Tent t
+WHERE t.tentID = 3 AND t.m_id = m.id;
+
+-- Member get his/her hours logged query (to find out how much he/she has done)
+-- For a member with member ID = 3
+SELECT m.hours_logged
+FROM Member m
+WHERE m.id = 23;
+
