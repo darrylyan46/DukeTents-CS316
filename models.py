@@ -61,6 +61,12 @@ class Availability(db.Model):
     time = db.Column('time', db.String(30), primary_key=True)
     shift = db.Column('shift', db.Boolean)
 
+    def __init__(self, memberID, date, time, shift=False):
+        self.memberID = memberID
+        self.date = date
+        self.time = time
+        self.shift = shift
+
 class AttendanceGames(db.Model):
     __tablename__ = 'attendanceGames'
     name = db.Column('name', db.String(30), primary_key=True)

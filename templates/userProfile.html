@@ -1,3 +1,6 @@
+{% extends 'layout.html' %}
+{% block heading %} {% for tent in tent %} {{ tent.name }}'s Profile {% endfor %} {% endblock %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,27 +11,91 @@
     <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
     <link rel="stylesheet" href={{ url_for('static', filename='scheduler.css') }}>
     <script src={{ url_for('static', filename='js/moment.js') }}></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
     <script src={{ url_for('static', filename='js/scheduler.js') }}></script>
 </head>
 <body>
-    <h1> Welcome {% for u in user %} {{ u.name }}! </h1>
+    <h1> Welcome {{ user.name }}! </h1>
     <br> <br>
-    <h3> Hours logged: {{ u.hours_Logged | string }}</h3>
-    <h3> Games attended: {{ u.games_Attended | string }}</h3>
-    {% endfor %}
+    <h3> Hours logged: {{ user.hours_Logged | string }}</h3>
+    <h3> Games attended: {{ user.games_Attended | string }}</h3>
+    <br>
+    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#import">Import Calendar</button> <br> <br>
+    <!-- Modals -->
+    <div class="modal fade" id="import" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4>Choose your import method</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-xs-6">
+                <h5>Google Calendar</h5>
+                <img src="https://lh3.ggpht.com/oGR9I1X9No3SfFEXrq655tETtVVzI3jIphhmEVPGPEVuM5gfwh8lOGWHQFf6gjSTvw=w300" class="img-rounded">
+              </div>
+              <div class="col-xs-6">
+                <h5>iCalendar File</h5>
+                <img src="http://braceit.net/wp-content/uploads/2016/04/Calendario.png" class="img-rounded" onclick="go_to_iCalendar()">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="close" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="iCalendar" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4>Select an iCalendar file from your computer:</h4>
+          </div>
+          <div class="modal-body">
+              <form action="{{ url_for('userProfile', userid=user.id) }}" method="POST" enctype="multipart/form-data">
+                  <input name="sched" type="file"> <br> <br>
+                  <input type="submit" class="btn btn-primary" value="Submit">
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="close" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id='calendar'></div>
 </body>
+
 <script>
+function go_to_iCalendar() {
+  $("#import").modal('hide');
+  $("#iCalendar").modal('show');
+}
     $(document).ready(function() {
+        //var pg = require('pg')
+        //var conString = 'postgresql://vagrant:dbpasswd@localhost/tents';
 
     // page is now ready, initialize the calendar...
-
     $('#calendar').fullCalendar({
-        schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives'
         // put your options and callbacks here
+        customButtons: {
+          downloadCalendar: {
+          text: 'Download Calendar',
+          click: function() {
+            alert("Downloaded calendar");
+          }
+        }
+        },
+        schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+        header: {
+            left: 'prev,next today',
+            right: 'downloadCalendar, month, agendaWeek, agendaDay'
+        },
+        defaultView: 'agendaWeek'
     })
     });
 </script>
 </html>
+{% endblock %}

@@ -36,6 +36,112 @@ CREATE TABLE Member_Attends_Games
 gameName VARCHAR(30) NOT NULL REFERENCES AttendanceGames(name),
 PRIMARY KEY (memberID, gameName));
 
+
+-- DYNAMIC QUERIES
+
+-- Trigger that updates tables if Member is deleted
+CREATE FUNCTION TF_delete_Member_ref() RETURNS TRIGGER AS $$
+ BEGIN
+ 	DELETE FROM Member_In_Tent WHERE OLD.memberID = memberID;
+ 	DELETE FROM Availability WHERE OLD.memberid = memberID;
+ 	DELETE FROM Member_Attends_Games WHERE OLD.memberID = memberID;
+ 	RETURN NEW;
+ END;
+ $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER TG_delete_Member_ref() RETURNS TRIGGER AS $$
+ AFTER DELETE ON Member
+ FOR EACH ROW
+ EXECUTE PROCEDURE TF_delete_Member_ref();
+
+-- Trigger for updating number of games attended for each member
+-- after update or insert on number of games attended.
+CREATE FUNCTION TF_update_gamesAttended_ref() RETURNS TRIGGER AS $$
+ BEGIN
+	UPDATE Member
+	SET games_attended = games_attended + 1
+	WHERE NEW.memberid = id;
+	RETURN NEW;
+ END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER TG_update_gamesAttended
+ AFTER INSERT ON Member_Attends_Games
+ FOR EACH ROW
+ EXECUTE PROCEDURE TF_update_gamesAttended_ref();
+
+-- Trigger for updating Member hours logged after
+-- update or insert on Availability
+CREATE FUNCTION TF_update_hoursLogged_ref() RETURNS TRIGGER AS $$
+ BEGIN
+ 	IF NEW.shift = 't' THEN
+		UPDATE Member
+		SET hours_logged = hours_logged + 1
+		WHERE NEW.memberid = id;
+	END IF;
+	RETURN NEW;
+ END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER TG_update_hoursLogged
+AFTER UPDATE ON Availability
+FOR EACH ROW
+EXECUTE PROCEDURE TF_update_hoursLogged_ref();
+
+-- USER QUERIES
+
+-- Query for member to add times.
+-- For member with m_id = 2, insert user is free from 8am-11am on February 7, 2017:
+INSERT INTO Availability VALUES(2, '2017-02-07', '08:00-11:00');
+
+-- Get availabilities for every tent member query (for a captain to create a schedule or a member to see availabilities)
+-- For tent with tentID = 1:
+SELECT m.name, a.date, a.time
+FROM Availability a, Member m, Member_In_Tent t
+WHERE a.memberID = m.ID AND t.tentID = 1 AND m.id = t.memberID;
+
+-- Captain updates schedule/shift query so a member has a shift (for a captain to notify members of their shifts)
+UPDATE Availability SET shift = 't' WHERE memberid = 3 AND date = '2017-01-29' AND time = '10:00-23:00';
+UPDATE Availability SET shift = 't' WHERE memberid = 4 AND date = '2017-01-29' AND time = '00:00-12:00';
+UPDATE Availability SET shift = 't' WHERE memberid = 5 AND date = '2017-01-29' AND time = '12:00-17:00';
+UPDATE Availability SET shift = 't' WHERE memberid = 6 AND date = '2017-01-29' AND time = '17:00-23:59';
+
+-- Captain gets final shifts query (for a captain to see currently scheduled shifts)
+-- For a captain in tent with tent id = 1:
+SELECT m.name, a.date, a.time
+FROM Availability a, Member m, Member_In_Tent t
+WHERE a.memberID = m.id AND t.tentID = 1 AND m.id = t.memberID AND shift = 't';
+
+-- Member get his/her shifts query (for a member to see his/her scheduled shifts)
+-- For a member with m_id = 2:
+SELECT m.name, a.date, a.time
+FROM Availability a, Member m
+WHERE a.memberID = m.id AND m.id = 4 AND shift = 't';
+
+-- Captain get number of games attended for all members query (to find out who’s slacking)
+-- For captain of a tent with tentID = 0:
+SELECT m.name, m.games_attended
+FROM Member m, Member_In_Tent t
+WHERE t.tentID = 4 AND t.memberID = m.id;
+
+-- Member get his/her games attended list query (to see which games he/she attended)
+-- For a member with member ID = 0
+SELECT mag.gameName
+FROM Member_Attends_Games mag
+WHERE mag.memberID = 14;
+
+-- Captain get hours logged list for all members query (to find out who’s slacking)
+-- For captain of a tent with tentID = 0;
+SELECT m.name, m.hours_logged
+FROM Member m, Member_In_Tent t
+WHERE t.tentID = 3 AND t.memberID = m.id;
+
+-- Member get his/her hours logged query (to find out how much he/she has done)
+-- For a member with member ID = 3
+SELECT m.hours_logged
+FROM Member m
+WHERE m.id = 23;
+
 -- Begin production dataset
 INSERT INTO Tent VALUES (0, 'apple', 'white'); 
 INSERT INTO Tent VALUES (1, 'banana', 'white');
@@ -71,11 +177,11 @@ INSERT INTO Member VALUES (23, 'Xavier', 7, 3, 'f');
 INSERT INTO Member VALUES (24, 'Yvette', 3, 2, 'f');
 INSERT INTO Member VALUES (25, 'Zoe', 15, 6, 'f');
 
-INSERT INTO Member_In_Tent VALUES (0, 0); 
-INSERT INTO Member_In_Tent VALUES (0, 1); 
-INSERT INTO Member_In_Tent VALUES (0, 2); 
+INSERT INTO Member_In_Tent VALUES (0, 0);
+INSERT INTO Member_In_Tent VALUES (0, 1);
+INSERT INTO Member_In_Tent VALUES (0, 2);
 INSERT INTO Member_In_Tent VALUES (1, 3);
-INSERT INTO Member_In_Tent VALUES (1, 4); 
+INSERT INTO Member_In_Tent VALUES (1, 4);
 INSERT INTO Member_In_Tent VALUES (1, 5);
 INSERT INTO Member_In_Tent VALUES (1, 6);
 INSERT INTO Member_In_Tent VALUES (1, 7);
@@ -441,40 +547,4 @@ INSERT INTO Member_Attends_Games VALUES (25, 'NCStateMens');
 INSERT INTO Member_Attends_Games VALUES (25, 'ClemsonWomens'); 
 INSERT INTO Member_Attends_Games VALUES (25, 'PittMens'); 
 INSERT INTO Member_Attends_Games VALUES (25, 'UNCWomens');
-INSERT INTO Member_Attends_Games VALUES (25, 'VirginiaTechWomens'); 
-
--- DYNAMIC QUERIES
-
--- Trigger for updating number of games attended for each member
--- after update or insert on number of games attended.
-CREATE FUNCTION TF_update_gamesAttended_ref() RETURNS TRIGGER AS $$
- BEGIN
-	UPDATE Member
-	SET games_attended = games_attended + 1
-	WHERE NEW.m_id = id;
-	RETURN NEW;
- END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER TG_update_gamesAttended
- AFTER INSERT ON Member_Attends_Games
- FOR EACH ROW
- EXECUTE PROCEDURE TF_update_gamesAttended_ref();
-
--- Trigger for updating Member hours logged after
--- update or insert on Availability
-CREATE FUNCTION TF_update_hoursLogged_ref() RETURNS TRIGGER AS $$
- BEGIN
- 	IF NEW.shift = 't' THEN
-		UPDATE Member
-		SET hours_logged = hours_logged + 1
-		WHERE NEW.m_id = id;
-	END IF;
-	RETURN NEW;
- END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER TG_update_hoursLogged
-AFTER UPDATE ON Availability
-FOR EACH ROW
-EXECUTE PROCEDURE TF_update_hoursLogged_ref();
+INSERT INTO Member_Attends_Games VALUES (25, 'VirginiaTechWomens');

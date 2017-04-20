@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
-import psycopg2
 import models
+from icsParse import readFile
 import forms
 
 app = Flask(__name__)
@@ -27,6 +27,7 @@ def signup():
         return render_template('signup.html')
     elif request.method == 'POST':
         name = request.form['username']
+        # Check if username is in database already
         tent_id = request.form['tentid']
         isCaptain = request.form['captain']
         permissions = False
@@ -41,7 +42,7 @@ def signup():
         db.session.commit()
         return render_template(url_for('userProfile', user=newUser.id))
 
-@app.route('/tentProfile/<tentid>')
+@app.route('/tentProfile/<int:tentid>')
 def tentProfile(tentid):
     tent = db.session.execute('SELECT * FROM Tent WHERE id = :id',
                               dict(id=tentid))
@@ -49,31 +50,26 @@ def tentProfile(tentid):
                                 , dict(id=tentid))
     return render_template('tentProfile.html', tent=tent, tenters=members)
 
-@app.route('/userProfile/<userid>')
+@app.route('/userProfile/<int:userid>')
 def userProfile(userid):
-    user = db.session.execute('SELECT * FROM Member WHERE name = :id',
-                              dict(id=userid))
+    user = db.session.query(models.Member)\
+            .filter(models.Member.id == userid).one()
+    if request.method == "POST":
+        f = request.form['sched']
+        timeDict = readFile(f)
+        for date, events in timeDict:
+            for event in events:
+                newEvent = models.Availability(userid, date, event, False)
+                db.session.add(newEvent)
+        db.session.commit()
     return render_template('userProfile.html', user=user)
 
 
-@app.route('/edit-drinker/<name>', methods=['GET', 'POST'])
-def edit_drinker(name):
-    drinker = db.session.query(models.Drinker)\
-        .filter(models.Drinker.name == name).one()
-    beers = db.session.query(models.Beer).all()
-    bars = db.session.query(models.Bar).all()
-    form = forms.DrinkerEditFormFactory.form(drinker, beers, bars)
-    if form.validate_on_submit():
-        try:
-            form.errors.pop('database', None)
-            models.Drinker.edit(name, form.name.data, form.address.data,
-                                form.get_beers_liked(), form.get_bars_frequented())
-            return redirect(url_for('drinker', name=form.name.data))
-        except BaseException as e:
-            form.errors['database'] = str(e)
-            return render_template('edit-drinker.html', drinker=drinker, form=form)
-    else:
-        return render_template('edit-drinker.html', drinker=drinker, form=form)
+
+
+@app.route('/userProfile/<int:userid>/enterSchedule')
+def enterSchedule(userid):
+    return
 
 @app.template_filter('pluralize')
 def pluralize(number, singular='', plural='s'):

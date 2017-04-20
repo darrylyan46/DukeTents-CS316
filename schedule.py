@@ -8,17 +8,15 @@ from icalendar import Calendar, Event
 from datetime import datetime, time, timedelta
 import json
 
-
-"""
-Object that contains time in UTC format and name of individual
-scheduled for the slot.
-
-@param name - Student name
-@param time - Tent shift (in UTC)
-@param num - Number of students required
-"""
 class Slot:
+    """
+    Object that contains time in UTC format and name of individual
+    scheduled for the slot.
 
+    @:param name - Student name
+    @:param time - Tent shift (in UTC)
+    @:param num - Number of students required
+    """
     def __init__(self, time, num):
         self.names = []
         self.time = time
@@ -36,25 +34,16 @@ class Slot:
     def getNum(self):
         return self.num
 
-
-"""
-Helper function that converts time string into datetime object.
-"""
-
 def strToDateTime(str):
+    """ Helper function that converts time string into datetime object """
     return datetime.strptime(str, "%Y-%m-%d %H:%M:%S")
 
-"""
-Helper function that converts datetime object into string
-"""
-
 def timeToStr(time):
+    """ Helper function that converts datetime object into string """
     return time.strftime("%Y-%m-%d %H:%M:%S")
 
-"""
-Function that returns two-item tuple of start-end times of an event
-"""
 def getStartEnd(timeRange):
+    """ Function that returns two-item tuple of start-end times of an event """
     timeList = timeRange.split(" to ")
     return (strToDateTime(timeList[0]), strToDateTime(timeList[1]))
 
@@ -63,14 +52,13 @@ def timeInJS(time):
     timeList = strTime.split(' ')
     return timeList[0] + "T" + timeList[1]
 
-
-"""
-Helper function that returns boolean if datetime object is considered
-night time slot.
-
-@param currentTime - A datetime object
-"""
 def isNight(currentTime):
+    """
+    Helper function that returns boolean if datetime object is considered
+    night time slot.
+
+    @param currentTime - A datetime object
+    """
     if currentTime.weekday() <= 2 and currentTime.time() == time(23, 0, 0):
         return True
 
@@ -79,14 +67,14 @@ def isNight(currentTime):
 
     return False
 
-"""
-Helper function that returns boolean if two time ranges conflict with
-each other.
-
-@param time1 - Time range as a string
-@param time2 - Time range as a string
-"""
 def isFree(time1, time2):
+    """
+    Helper function that returns boolean if two time ranges conflict with
+    each other.
+
+    @:param time1 - Time range as a string
+    @:param time2 - Time range as a string
+    """
     splitOne = time1.split(" to ")
     begOne = strToDateTime(splitOne[0])
     endOne = strToDateTime(splitOne[1])
@@ -100,16 +88,15 @@ def isFree(time1, time2):
 
     return True
 
-"""
-Function that creates a collection of empty Slot Objects based
-on inputted tent color.
-
-@param beg - Datetime object of beginning
-@param end - Datetime object of end
-@param color - String that represents tent color.
-"""
-
 def initSchedule(beg, end, color):
+    """
+    Function that creates a collection of empty Slot Objects based
+    on inputted tent color.
+
+    @:param beg - Datetime object of beginning
+    @:param end - Datetime object of end
+    @:param color - String that represents tent color.
+    """
     slotList = []
 
     currColor = color
@@ -161,14 +148,15 @@ def initSchedule(beg, end, color):
 
     return slotList
 
-"""
-Helper function that fills in the slots of empty schedule. Does not
-return any values.
 
-@param entryList - A list of Entry objects containing student-calendar pairs
-@param slots - A list of Slot objects
-"""
 def fill_slots(entryList, slots):
+    """
+    Helper function that fills in the slots of empty schedule. Does not
+    return any values.
+
+    @:param entryList - A list of Entry objects containing student-calendar pairs
+    @:param slots - A list of Slot objects
+    """
     slotList = []
     for slot in slots:
         shift = slot.getTime()
@@ -199,15 +187,15 @@ def fill_slots(entryList, slots):
 
     return slotList
 
-"""
-Function that builds list of all possible schedules from
-available entrant schedules.
 
-@:param entryMap - Key: Entrant, Value: Schedule
-@:param color - String representing tent color
-"""
 def build_schedule(entryMap, color):
+    """
+    Function that builds list of all possible schedules from
+    available entrant schedules.
 
+    @:param entryMap - Key: Entrant, Value: Schedule
+    @:param color - String representing tent color
+    """
     if color == 'black':
         beg = strToDateTime("2017-01-11 23:00:00")
         end = strToDateTime("2017-01-19 23:00:00")
@@ -235,13 +223,13 @@ def processData(events):
         jsonData.append({"title": title, "start": timeInJS(start), "end": timeInJS(end)})
     return json.dumps(jsonData)
 
-"""
-Function that returns an ics file filled with
-tenters who can assume tenting shifts.
-
-@:param slots - A list of Slot objects
-"""
 def exportCalendar(slots):
+    """
+    Function that returns an ics file filled with
+    tenters who can assume tenting shifts.
+
+    @:param slots - A list of Slot objects
+    """
     cal = Calendar()
 
     for slot in slots:
@@ -261,24 +249,3 @@ def exportCalendar(slots):
         cal.add_component(event)
 
     return cal.to_ical()
-
-'''
-if __name__ == '__main__':
-    fileList = [item for item in listdir("externalDocs") if not item.startswith(".")]
-    nameList = ["Ada", "Allen", "Andy", "David", "Derek", "Edward", "Emily", "Ethan", "Frank"
-            , "John", "Kathy", "Raj"]
-
-    nameDict = makeDict(nameList, fileList)
-    scheduleList = readFiles(nameDict)
-    slots = build_schedule(scheduleList, "black")
-
-
-for slot in slots:
-    print "Shift Time: " + slot.getTime()
-    print "Names: " + " ".join(slot.getNames())
-    print "Names Length: " + str(len(slot.getNames()))
-    print "Number of Students Needed: " + str(slot.getNum())
-print "Number of Slots: " + str(len(slots))
-
-print processData(slots)
-'''
