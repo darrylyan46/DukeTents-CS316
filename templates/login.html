@@ -27,7 +27,7 @@
         var VALIDURL    =   'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
         var SCOPE       =   'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.email';
         var CLIENTID    =   '1059615212264-4aff24h6u6mmtonnicbu0bd2vntnfaq4.apps.googleusercontent.com';
-        var REDIRECT    =   'http://www.google.com'
+        var REDIRECT    =   'http://localhost:5000/login'
         var LOGOUT      =   'http://accounts.google.com/Logout';
         var TYPE        =   'token';
         var _url        =   OAUTHURL + 'scope=' + SCOPE + '&client_id=' + CLIENTID + '&redirect_uri=' + REDIRECT + '&response_type=' + TYPE;
@@ -77,6 +77,7 @@
                 url: 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + acToken,
                 data: null,
                 success: function(resp) {
+                    //do all the work here
                     user    =   resp;
                     console.log(user);
                     $('#uName').text('Welcome ' + user.name);
