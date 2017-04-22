@@ -88,6 +88,26 @@ function go_to_iCalendar() {
           }
         }
         },
+        events: function(start, end, timezone, callback){
+          $.ajax({
+            url: $(location).attr('href') + '/data',
+            dataType: 'json',
+            success: function(doc) {
+              var obj = jQuery.parseJSON(doc);
+              var events = [];
+              $.each(function() {
+                events.push({
+                  id: ,
+                  title: ,
+                  allday: False,
+                  start: ,
+                  end: ,
+                })
+              })
+            }
+          });
+
+        },
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
         header: {
             left: 'prev,next today',

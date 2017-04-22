@@ -196,6 +196,8 @@ def build_schedule(entryMap, color):
     @:param entryMap - Key: Entrant, Value: Schedule
     @:param color - String representing tent color
     """
+    colors = ['black', 'blue', 'white']
+    assert(color in colors)
     if color == 'black':
         beg = strToDateTime("2017-01-11 23:00:00")
         end = strToDateTime("2017-01-19 23:00:00")

@@ -1,8 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-import models
 from icsParse import readFile
+import models
 import forms
+import queries
 
 app = Flask(__name__)
 app.secret_key = 's3cr3t'
@@ -11,7 +12,7 @@ db = SQLAlchemy(app, session_options={'autocommit': False})
 
 @app.route('/')
 def all_tents():
-    tents = db.session.query(models.Tent).all()
+    tents = queries.getAllTents(db)
     return render_template('all-tents.html', tents=tents)
 
 @app.route('/login')
@@ -44,10 +45,8 @@ def signup():
 
 @app.route('/tentProfile/<int:tentid>')
 def tentProfile(tentid):
-    tent = db.session.execute('SELECT * FROM Tent WHERE id = :id',
-                              dict(id=tentid))
-    members = db.session.execute('SELECT * FROM Member_In_Tent t, Member m WHERE t.tentID = :id AND m.id = t.memberID'
-                                , dict(id=tentid))
+    tent = queries.getTent(db, tentid)
+    members = queries.getTentMembers(db, tentid)
     return render_template('tentProfile.html', tent=tent, tenters=members)
 
 @app.route('/userProfile/<int:userid>')
@@ -64,8 +63,10 @@ def userProfile(userid):
         db.session.commit()
     return render_template('userProfile.html', user=user)
 
-
-
+@app.route('/userProfile/<int:userid>/data')
+def data(userid):
+    data = queries.getAllMemberAvailabilities(db, userid)
+    return jsonify([dict(d) for d in data])
 
 @app.route('/userProfile/<int:userid>/enterSchedule')
 def enterSchedule(userid):

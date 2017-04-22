@@ -57,8 +57,8 @@ class Availability(db.Model):
     __tablename__ = 'availability'
     memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
                          primary_key=True)
-    date = db.Column('date', db.String(30), primary_key=True)
-    time = db.Column('time', db.String(30), primary_key=True)
+    startTime = db.Column('date', db.String(30), primary_key=True)
+    endTime = db.Column('time', db.String(30), primary_key=True)
     shift = db.Column('shift', db.Boolean)
 
     def __init__(self, memberID, date, time, shift=False):

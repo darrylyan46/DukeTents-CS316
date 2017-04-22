@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-{% block heading %} {% for tent in tent %} {{ tent.name }}'s Profile {% endfor %} {% endblock %}
+{% block heading %} {{ tent.name }}'s Profile {% endblock %}
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
@@ -8,8 +8,8 @@
     <title>Your Tent Profile | Tents @ Duke</title>
     <!-- Stylesheets and JS for FullCalendar support -->
     <link rel="stylesheet" href={{ url_for('static', filename='css/fullcalendar.css') }}>
-    <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
-    <link rel="stylesheet" href={{ url_for('static', filename='scheduler.css') }}>
+    <link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }}>
+    <link rel="stylesheet" href={{ url_for('static', filename='css/scheduler.css') }}>
     <script src={{ url_for('static', filename='js/moment.js') }}></script>
     <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
     <script src={{ url_for('static', filename='js/scheduler.js') }}></script>
@@ -25,8 +25,8 @@
     <div id='calendar'></div>
 </body>
 <script>
-    $(document).ready(function() {
 
+    $(document).ready(function() {
     // page is now ready, initialize the calendar...
 
     $('#calendar').fullCalendar({
@@ -36,7 +36,8 @@
             left: 'prev,next today',
             right: 'month, agendaWeek, agendaDay'
         },
-        defaultView: 'agendaWeek'
+        resources: [],
+        defaultView: 'timelineMonth'
     })
     });
 </script>
