@@ -92,21 +92,26 @@ function go_to_iCalendar() {
           $.ajax({
             url: $(location).attr('href') + '/data',
             dataType: 'json',
+            data: {
+              start: start.format(),
+              end: end.format()
+            },
             success: function(doc) {
-              var obj = jQuery.parseJSON(doc);
+              var obj = JSON.parse(doc);
               var events = [];
-              $.each(function() {
+              $.each(obj, function(key, value) {
                 events.push({
-                  id: ,
-                  title: ,
-                  allday: False,
-                  start: ,
-                  end: ,
-                })
-              })
+                  title: $(this).attr('name') + ' Unable to Attend Shift',
+                  start: $(this).attr('startTime'),
+                  end: $(this).attr('endTime'),
+                  allDay: false,
+                  editable: false,
+                  backgroundColor: 'red'
+                });
+              });
+              callback(events);
             }
           });
-
         },
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
         header: {

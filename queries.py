@@ -32,3 +32,4 @@ def getAllMemberAvailabilities(db, uid):
     data = db.session.execute('SELECT m.name, a.startTime, a.endTime, a.shift FROM Availability a, Member m WHERE a.memberID = :id and m.id = a.memberID',
                                 dict(id=uid))
     return [d for d in data]
+    

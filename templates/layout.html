@@ -6,11 +6,22 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
+    <link rel="icon" type="image" href="{{ url_for('static', filename='img/favicon.png')}}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='js/npm.js') }}"></script>
 </head>
 <body>
+  <nav class="navbar navbar-default">
+      <div class="container-fluid">
+          <div class="navbar-header">
+              <a class="navbar-brand" href={{ url_for('all_tents') }}></a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li><a href=http://www.kvillenation.com>Kville Nation</a></li>
+          </ul>
+      </div>
+  </nav>
     <h1>
         <a href={{ url_for('all_tents') }}>Tents @ Duke</a>
     </h1>
