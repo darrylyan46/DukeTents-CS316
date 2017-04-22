@@ -49,6 +49,10 @@ def tentProfile(tentid):
     members = queries.getTentMembers(db, tentid)
     return render_template('tentProfile.html', tent=tent, tenters=members)
 
+@app.route('/tentProfile/<int:tentid>/data')
+def tentData(tentid):
+    return
+
 @app.route('/userProfile/<int:userid>')
 def userProfile(userid):
     user = db.session.query(models.Member)\
@@ -64,7 +68,7 @@ def userProfile(userid):
     return render_template('userProfile.html', user=user)
 
 @app.route('/userProfile/<int:userid>/data')
-def data(userid):
+def memberData(userid):
     data = queries.getAllMemberAvailabilities(db, userid)
     return jsonify([dict(d) for d in data])
 

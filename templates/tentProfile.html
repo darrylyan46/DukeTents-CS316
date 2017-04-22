@@ -8,7 +8,6 @@
     <title>Your Tent Profile | Tents @ Duke</title>
     <!-- Stylesheets and JS for FullCalendar support -->
     <link rel="stylesheet" href={{ url_for('static', filename='css/fullcalendar.css') }}>
-    <link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }}>
     <link rel="stylesheet" href={{ url_for('static', filename='css/scheduler.css') }}>
     <script src={{ url_for('static', filename='js/moment.js') }}></script>
     <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
@@ -25,19 +24,18 @@
     <div id='calendar'></div>
 </body>
 <script>
-
     $(document).ready(function() {
-    // page is now ready, initialize the calendar...
-
     $('#calendar').fullCalendar({
         // put your options and callbacks here
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+        defaultView: 'timelineDay',
         header: {
             left: 'prev,next today',
-            right: 'month, agendaWeek, agendaDay'
+            center: 'title',
+            right: 'timelineDay, agendaWeek, agendaDay'
         },
-        resources: [],
-        defaultView: 'timelineMonth'
+        resourceLabelText: 'Members',
+        resources: members
     })
     });
 </script>

@@ -13,13 +13,11 @@ def getTentMembers(db, tid):
 
 def getTent(db, tid):
     '''Returns Tent tuple with id = tid'''
-    return db.session.query(models.Tent)\
-        .filter(models.Tent.id == tid).one()
+    return db.session.query(models.Tent).filter(models.Tent.id == tid).one()
 
 def getMember(db, uid):
     '''Returns Member tuple with id = uid'''
-    return db.session.query(models.Member)\
-        .filter(models.Member.id == uid).one()
+    return db.session.query(models.Member).filter(models.Member.id == uid).one()
 
 def getMemberAttendedGames(db, uid):
     '''Returns list of AttendanceGames tuples that Member attended with id = uid'''
@@ -32,4 +30,3 @@ def getAllMemberAvailabilities(db, uid):
     data = db.session.execute('SELECT m.name, a.startTime, a.endTime, a.shift FROM Availability a, Member m WHERE a.memberID = :id and m.id = a.memberID',
                                 dict(id=uid))
     return [d for d in data]
-    

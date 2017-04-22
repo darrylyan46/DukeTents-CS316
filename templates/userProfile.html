@@ -1,5 +1,4 @@
 {% extends 'layout.html' %}
-{% block heading %} {% for tent in tent %} {{ tent.name }}'s Profile {% endfor %} {% endblock %}
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
@@ -97,13 +96,12 @@ function go_to_iCalendar() {
               end: end.format()
             },
             success: function(doc) {
-              var obj = JSON.parse(doc);
               var events = [];
-              $.each(obj, function(key, value) {
+              $.each(doc, function(key, value) {
                 events.push({
                   title: $(this).attr('name') + ' Unable to Attend Shift',
-                  start: $(this).attr('startTime'),
-                  end: $(this).attr('endTime'),
+                  start: $(this).attr('starttime'),
+                  end: $(this).attr('endtime'),
                   allDay: false,
                   editable: false,
                   backgroundColor: 'red'
@@ -116,6 +114,7 @@ function go_to_iCalendar() {
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
         header: {
             left: 'prev,next today',
+            center: 'title',
             right: 'downloadCalendar, month, agendaWeek, agendaDay'
         },
         defaultView: 'agendaWeek'
