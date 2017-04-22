@@ -1,6 +1,6 @@
 
 /*!
-FullCalendar Scheduler v1.6.0
+FullCalendar Scheduler v1.6.1
 Docs & License: https://fullcalendar.io/scheduler/
 (c) 2017 Adam Shaw
  */
@@ -19,7 +19,7 @@ Docs & License: https://fullcalendar.io/scheduler/
 		factory(jQuery, moment);
 	}
 })(function($, moment) {;
-var COL_MIN_WIDTH, Calendar, CalendarExtension, Class, ClippedScroller, CoordCache, DEFAULT_GRID_DURATION, DragListener, EmitterMixin, EnhancedScroller, EventRow, FC, Grid, HRowGroup, LICENSE_INFO_URL, ListenerMixin, MAX_AUTO_CELLS, MAX_AUTO_SLOTS_PER_LABEL, MAX_CELLS, MIN_AUTO_LABELS, PRESET_LICENSE_KEYS, Promise, RELEASE_DATE, ResourceAgendaView, ResourceBasicView, ResourceDayGrid, ResourceDayTableMixin, ResourceGridMixin, ResourceManager, ResourceMonthView, ResourceRow, ResourceTimeGrid, ResourceTimelineGrid, ResourceTimelineView, ResourceViewMixin, RowGroup, RowParent, STOCK_SUB_DURATIONS, ScrollFollower, ScrollFollowerSprite, ScrollJoiner, ScrollerCanvas, Spreadsheet, TaskQueue, TimelineGrid, TimelineView, UPGRADE_WINDOW, VRowGroup, VertResourceViewMixin, View, _filterResourcesWithEvents, applyAll, capitaliseFirstLetter, compareByFieldSpecs, computeGreatestUnit, computeOffsetForSeg, computeOffsetForSegs, copyRect, createObject, cssToStr, debounce, detectWarningInContainer, divideDurationByDuration, divideRangeByDuration, durationHasTime, flexibleCompare, getContentRect, getOuterRect, getOwnCells, getRectHeight, getRectWidth, getScrollbarWidths, hContainRect, htmlEscape, intersectRanges, intersectRects, isImmuneUrl, isInt, isValidKey, joinRects, multiplyDuration, origExecuteEventsRender, origGetSegCustomClasses, origGetSegDefaultBackgroundColor, origGetSegDefaultBorderColor, origGetSegDefaultTextColor, origHandleDate, origOnDateRender, origRemoveElement, origSetElement, parseFieldSpecs, processLicenseKey, proxy, renderingWarningInContainer, testRectContains, testRectHContains, testRectVContains, timeRowSegsCollide, vContainRect,
+var COL_MIN_WIDTH, Calendar, CalendarExtension, Class, ClippedScroller, CoordCache, DEFAULT_GRID_DURATION, DragListener, EmitterMixin, EnhancedScroller, EventRow, FC, Grid, HRowGroup, LICENSE_INFO_URL, ListenerMixin, MAX_AUTO_CELLS, MAX_AUTO_SLOTS_PER_LABEL, MAX_CELLS, MIN_AUTO_LABELS, PRESET_LICENSE_KEYS, Promise, RELEASE_DATE, ResourceAgendaView, ResourceBasicView, ResourceDayGrid, ResourceDayTableMixin, ResourceGridMixin, ResourceManager, ResourceMonthView, ResourceRow, ResourceTimeGrid, ResourceTimelineGrid, ResourceTimelineView, ResourceViewMixin, RowGroup, RowParent, STOCK_SUB_DURATIONS, ScrollFollower, ScrollFollowerSprite, ScrollJoiner, ScrollerCanvas, Spreadsheet, TaskQueue, TimelineGrid, TimelineView, UPGRADE_WINDOW, VRowGroup, VertResourceViewMixin, View, _filterResourcesWithEvents, applyAll, capitaliseFirstLetter, compareByFieldSpecs, computeGreatestUnit, computeOffsetForSeg, computeOffsetForSegs, copyRect, createObject, cssToStr, debounce, detectWarningInContainer, divideDurationByDuration, divideRangeByDuration, durationHasTime, flexibleCompare, getContentRect, getOuterRect, getOwnCells, getRectHeight, getRectWidth, getScrollbarWidths, hContainRect, htmlEscape, intersectRanges, intersectRects, isImmuneUrl, isInt, isValidKey, joinRects, multiplyDuration, origExecuteEventsRender, origGetSegCustomClasses, origGetSegDefaultBackgroundColor, origGetSegDefaultBorderColor, origGetSegDefaultTextColor, origOnDateRender, origRemoveElement, origSetElement, parseFieldSpecs, processLicenseKey, proxy, renderingWarningInContainer, testRectContains, testRectHContains, testRectVContains, timeRowSegsCollide, vContainRect,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -27,9 +27,9 @@ var COL_MIN_WIDTH, Calendar, CalendarExtension, Class, ClippedScroller, CoordCac
 
 FC = $.fullCalendar;
 
-FC.schedulerVersion = "1.6.0";
+FC.schedulerVersion = "1.6.1";
 
-if (FC.internalApiVersion !== 8) {
+if (FC.internalApiVersion !== 9) {
   FC.warn('v' + FC.schedulerVersion + ' of FullCalendar Scheduler ' + 'is incompatible with v' + FC.version + ' of the core.\n' + 'Please see http://fullcalendar.io/support/ for more information.');
   return;
 }
@@ -1341,8 +1341,6 @@ origSetElement = View.prototype.setElement;
 
 origRemoveElement = View.prototype.removeElement;
 
-origHandleDate = View.prototype.handleDate;
-
 origOnDateRender = View.prototype.onDateRender;
 
 origExecuteEventsRender = View.prototype.executeEventsRender;
@@ -1374,7 +1372,7 @@ View.prototype.removeElement = function() {
 Replace the supermethod's logic. Important to unbind/bind *events* (TODO: make more DRY)
  */
 
-View.prototype.handleDate = function(date, isReset) {
+View.prototype.handleDate = function(dateProfile) {
   var resourcesNeedDate;
   resourcesNeedDate = this.opt('refetchResourcesOnNavigate');
   this.unbindEvents();
@@ -1383,7 +1381,7 @@ View.prototype.handleDate = function(date, isReset) {
       skipUnrender: true
     });
   }
-  return this.requestDateRender(date).then((function(_this) {
+  return this.requestDateRender(dateProfile).then((function(_this) {
     return function() {
       _this.bindEvents();
       if (resourcesNeedDate) {
@@ -2241,7 +2239,7 @@ VertResourceViewMixin = $.extend({}, ResourceViewMixin, {
       return Promise.resolve();
     }
   },
-  executeDateRender: function(date) {
+  executeDateRender: function(dateProfile) {
     return View.prototype.executeDateRender.apply(this, arguments).then((function(_this) {
       return function() {
         if (_this.isResourcesSet) {
@@ -2250,7 +2248,7 @@ VertResourceViewMixin = $.extend({}, ResourceViewMixin, {
       };
     })(this));
   },
-  executeDateUnrender: function(date) {
+  executeDateUnrender: function() {
     return View.prototype.executeDateUnrender.apply(this, arguments).then((function(_this) {
       return function() {
         if (_this.isResourcesSet) {
@@ -2722,14 +2720,10 @@ TimelineView = (function(superClass) {
     return new TimelineGrid(this);
   };
 
-  TimelineView.prototype.setRangeFromDate = function(date) {
-    var isChange;
-    isChange = TimelineView.__super__.setRangeFromDate.apply(this, arguments);
-    if (isChange) {
-      this.timeGrid.initScaleProps();
-      this.timeGrid.setRange(this.renderRange);
-    }
-    return isChange;
+  TimelineView.prototype.setDateProfile = function(dateProfile) {
+    TimelineView.__super__.setDateProfile.apply(this, arguments);
+    this.timeGrid.initScaleProps();
+    return this.timeGrid.setRange(this.renderRange);
   };
 
   TimelineView.prototype.getFallbackDuration = function() {
@@ -4487,7 +4481,7 @@ ResourceTimelineView = (function(superClass) {
   /*
   	TODO: the scenario where there were previously unassociated events that are now
   	 attached to this resource. should render those events immediately.
-  
+
   	Responsible for rendering the new resource
    */
 
@@ -6516,7 +6510,7 @@ FC.views.month.queryResourceClass = function(viewSpec) {
   }
 };
 
-RELEASE_DATE = '2017-03-23';
+RELEASE_DATE = '2017-04-01';
 
 UPGRADE_WINDOW = {
   years: 1,

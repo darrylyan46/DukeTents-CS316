@@ -51,7 +51,8 @@ def tentProfile(tentid):
 
 @app.route('/tentProfile/<int:tentid>/data')
 def tentData(tentid):
-    return
+    data = queries.getTentAvailabilities(db, tentid)
+    return jsonify([dict(d) for d in data])
 
 @app.route('/userProfile/<int:userid>')
 def userProfile(userid):

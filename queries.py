@@ -7,7 +7,9 @@ def getAllTents(db):
 
 def getTentMembers(db, tid):
     '''Returns list of all Member tuples in a Tent with @tid'''
-    members = db.session.execute('SELECT * FROM Member_In_Tent t, Member m WHERE t.tentID = :id AND m.id = t.memberID'
+    members = db.session.execute("""SELECT *
+                                    FROM Member_In_Tent t, Member m
+                                    WHERE t.tentID = :id AND m.id = t.memberID"""
                                 , dict(id=tid))
     return [member for member in members]
 
@@ -21,12 +23,24 @@ def getMember(db, uid):
 
 def getMemberAttendedGames(db, uid):
     '''Returns list of AttendanceGames tuples that Member attended with id = uid'''
-    games = db.session.execute("SELECT * FROM Member_Attends_Games mag, AttendanceGames ag WHERE mag.memberID = :id AND mag.gameName = ag.name",
+    games = db.session.execute("""SELECT *
+                                  FROM Member_Attends_Games mag, AttendanceGames ag
+                                  WHERE mag.memberID = :id AND mag.gameName = ag.name""",
                                 dict(id=uid))
     return [game for game in games]
 
 def getAllMemberAvailabilities(db, uid):
     '''Returns list of Availability tuples for Member with id = uid'''
-    data = db.session.execute('SELECT m.name, a.startTime, a.endTime, a.shift FROM Availability a, Member m WHERE a.memberID = :id and m.id = a.memberID',
+    data = db.session.execute(""" SELECT m.name, a.startTime, a.endTime, a.shift
+                                  FROM Availability a, Member m
+                                  WHERE a.memberID = :id AND m.id = a.memberID """,
                                 dict(id=uid))
+    return [d for d in data]
+
+def getTentAvailabilities(db, tid):
+    '''Returns list of Availability for all Members in a tent with id = tid'''
+    data = db.session.execute("""SELECT a.memberID, m1.name, a.startTime, a.endTime, a.shift
+                                 FROM Availability a, Member_In_Tent m, Member m1
+                                 WHERE m.tentID = :id AND a.memberID = m.memberID AND m1.id = a.memberID""",
+                                dict(id=tid))
     return [d for d in data]

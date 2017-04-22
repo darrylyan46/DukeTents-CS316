@@ -25,17 +25,54 @@
 </body>
 <script>
     $(document).ready(function() {
+      var members = [];
+      {% for tenter in tenters %}
+      var id = String.fromCharCode({{tenter.id}} + 97);
+      var name = '{{tenter.name}}';
+      console.log(id);
+      console.log(name);
+      members.push({
+        id: id,
+        title: name
+      });
+      {% endfor %}
     $('#calendar').fullCalendar({
         // put your options and callbacks here
+        now: '2017-01-15',
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
         defaultView: 'timelineDay',
         header: {
             left: 'prev,next today',
             center: 'title',
-            right: 'timelineDay, agendaWeek, agendaDay'
+            right: 'timelineDay, agendaWeek, timelineMonth'
         },
         resourceLabelText: 'Members',
-        resources: members
+        resources: members,
+        events: function(start, end, timezone, callback){
+          $.ajax({
+            url: $(location).attr('href') + '/data',
+            dataType: 'json',
+            data: {
+              start: start.format(),
+              end: end.format()
+            },
+            success: function(doc) {
+              var events = [];
+              $.each(doc, function(key, value) {
+                events.push({
+                  title: $(this).attr('name') + ' Unable to Attend Shift',
+                  resourceId: String.fromCharCode($(this).attr('memberid') + 97),
+                  start: $(this).attr('starttime'),
+                  end: $(this).attr('endtime'),
+                  allDay: false,
+                  editable: false,
+                  backgroundColor: 'red'
+                });
+              });
+              callback(events);
+            }
+          });
+        }
     })
     });
 </script>
