@@ -9,7 +9,7 @@ CREATE TABLE Tent
 CREATE TABLE Member
 (id INTEGER PRIMARY KEY NOT NULL,
  name VARCHAR(30) NOT NULL,
- hours_Logged INTEGER NOT NULL,
+ hours_Logged REAL NOT NULL,
  games_Attended INTEGER NOT NULL,
  permissions BOOLEAN);
 
@@ -34,6 +34,71 @@ CREATE TABLE Member_Attends_Games
 (memberID INTEGER NOT NULL REFERENCES Member(id),
 gameName VARCHAR(30) NOT NULL REFERENCES AttendanceGames(name),
 PRIMARY KEY (memberID, gameName));
+
+-- DYNAMIC QUERIES
+
+-- Trigger that updates tables if Member is deleted
+CREATE FUNCTION TF_delete_Member_ref() RETURNS TRIGGER AS $$
+ BEGIN
+ 	DELETE FROM Member_In_Tent WHERE OLD.id = memberID;
+ 	DELETE FROM Availability WHERE OLD.id = memberID;
+ 	DELETE FROM Member_Attends_Games WHERE OLD.id = memberID;
+ 	RETURN OLD;
+ END;
+ $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER TG_delete_Member
+ BEFORE DELETE
+ ON Member
+ FOR EACH ROW
+ EXECUTE PROCEDURE TF_delete_Member_ref();
+
+-- TRIGGERS
+
+-- Trigger for updating Member hours logged after
+-- update or insert on Availability
+
+CREATE FUNCTION TF_update_hoursLogged_ref() RETURNS TRIGGER AS
+$BODY$
+ DECLARE
+    startR REAL := substring(NEW.startTime from 12 for 2)::REAL + substring(NEW.startTime from 15 for 2)::REAL/60 + substring(NEW.startTime from 18 for 2)::REAL/3600;
+    endR REAL := substring(NEW.endTime from 12 for 2)::REAL + substring(NEW.endTime from 15 for 2)::REAL/60 + substring(NEW.endTime from 18 for 2)::REAL/3600;
+    diffR REAL := endR - startR;
+ BEGIN
+ 	IF NEW.shift = 't' THEN
+		UPDATE Member
+		SET hours_logged = hours_logged + diffR
+		WHERE NEW.memberID = id;
+	END IF;
+	RETURN NEW;
+ END;
+$BODY$ LANGUAGE plpgsql;
+
+CREATE TRIGGER TG_update_hoursLogged
+AFTER UPDATE
+ON Availability
+FOR EACH ROW
+EXECUTE PROCEDURE TF_update_hoursLogged_ref();
+
+-- Trigger for updating number of games attended for each member
+-- after update or insert on number of games attended.
+CREATE FUNCTION TF_update_gamesAttended_ref() RETURNS TRIGGER AS
+$BODY$
+ BEGIN
+	UPDATE Member
+	SET games_attended = games_attended + 1
+	WHERE NEW.memberID = id;
+	RETURN NEW;
+ END;
+$BODY$ LANGUAGE plpgsql;
+
+CREATE TRIGGER TG_update_gamesAttended
+ AFTER INSERT
+ ON Member_Attends_Games
+ FOR EACH ROW
+ EXECUTE PROCEDURE TF_update_gamesAttended_ref();
+
+
 
 -- Begin production dataset
 INSERT INTO Tent VALUES (0, 'apple', 'black');
@@ -67,8 +132,9 @@ INSERT INTO Member VALUES (20, 'Ulysses', 20, 3, 'f');
 INSERT INTO Member VALUES (21, 'Vick', 19, 5, 't');
 INSERT INTO Member VALUES (22, 'Wallace', 5, 5, 'f');
 INSERT INTO Member VALUES (23, 'Xavier', 7, 3, 'f');
-INSERT INTO Member VALUES (24, 'Yvette', 3, 2, 'f');
-INSERT INTO Member VALUES (25, 'Zoe', 15, 6, 'f');
+INSERT INTO Member VALUES (24, 'Yvette', 3, 0, 'f');
+INSERT INTO Member VALUES (25, 'Zoe', 15, 1, 'f');
+INSERT INTO Member VALUES (26, 'Test Delete', 0, 0, 'f');
 
 INSERT INTO Member_In_Tent VALUES (0, 0);
 INSERT INTO Member_In_Tent VALUES (0, 1);
@@ -96,6 +162,7 @@ INSERT INTO Member_In_Tent VALUES (4, 22);
 INSERT INTO Member_In_Tent VALUES (4, 23);
 INSERT INTO Member_In_Tent VALUES (5, 24);
 INSERT INTO Member_In_Tent VALUES (5, 25);
+INSERT INTO Member_In_Tent VALUES (5, 26);
 
 INSERT INTO Availability VALUES (0, '2017-01-16T08:00:00', '2017-01-16T13:00:00', 'f');
 INSERT INTO Availability VALUES (0, '2017-01-20T08:00:00', '2017-01-20T13:00:00', 'f');
@@ -110,7 +177,7 @@ INSERT INTO Availability VALUES (1, '2017-01-14T09:00:00', '2017-01-14T12:00:00'
 INSERT INTO Availability VALUES (1, '2017-01-15T19:00:00', '2017-01-15T23:30:00', 'f');
 INSERT INTO Availability VALUES (1, '2017-01-17T14:00:00', '2017-01-17T22:00:00', 'f');
 INSERT INTO Availability VALUES (1, '2017-01-19T16:00:00', '2017-01-19T23:30:00', 'f');
-INSERT INTO Availability VALUES (1, '2017-01-22T09:00:00', '2017-01-19T12:00:00', 'f');
+INSERT INTO Availability VALUES (1, '2017-01-22T09:00:00', '2017-01-22T12:00:00', 'f');
 -- For example, above would be: (1, '2017-01-22T09:00:00', '2017-01-22T12:00:00', 'f');
 INSERT INTO Availability VALUES (1, '2017-01-24T20:00:00', '2017-01-24T23:59:00', 'f');
 INSERT INTO Availability VALUES (1, '2017-01-30T09:00:00', '2017-01-30T12:00:00', 'f');
@@ -157,7 +224,7 @@ INSERT INTO Availability VALUES (6, '2017-01-21T10:00:00', '2017-01-21T12:00:00'
 INSERT INTO Availability VALUES (6, '2017-01-22T08:00:00', '2017-01-22T12:00:00', 'f');
 INSERT INTO Availability VALUES (6, '2017-01-24T12:00:00', '2017-01-24T19:00:00', 'f');
 INSERT INTO Availability VALUES (6, '2017-01-26T08:00:00', '2017-01-26T12:00:00', 'f');
-INSERT INTO Availability VALUES (6, '2017-01-29T08:00:00', '2017-01-29T18:00:00', 'f');
+INSERT INTO Availability VALUES (6, '2017-01-29T17:00:00', '2017-01-29T18:45:36', 'f');
 INSERT INTO Availability VALUES (6, '2017-02-06T10:00:00', '2017-02-06T12:00:00', 'f');
 INSERT INTO Availability VALUES (6, '2017-02-07T08:00:00', '2017-02-07T12:00:00', 'f');
 INSERT INTO Availability VALUES (7, '2017-01-15T08:00:00', '2017-01-15T12:00:00', 'f');
@@ -352,6 +419,7 @@ INSERT INTO Availability VALUES (25, '2017-02-04T10:00:00', '2017-02-04T19:00:00
 INSERT INTO Availability VALUES (25, '2017-02-05T12:00:00', '2017-02-05T21:00:00', 'f');
 INSERT INTO Availability VALUES (25, '2017-02-06T00:00:00', '2017-02-06T09:00:00', 'f');
 INSERT INTO Availability VALUES (25, '2017-02-07T00:00:00', '2017-02-07T11:00:00', 'f');
+INSERT INTO Availability VALUES (26, '2017-02-01T00:00:00', '2017-02-01T01:00:00', 'f');
 
 INSERT INTO AttendanceGames VALUES ('MiamiMens', '2017-01-14', '17:00');
 INSERT INTO AttendanceGames VALUES ('NCStateMens', '2017-01-23', '15:00');
@@ -442,6 +510,8 @@ INSERT INTO Member_Attends_Games VALUES (25, 'ClemsonWomens');
 INSERT INTO Member_Attends_Games VALUES (25, 'PittMens');
 INSERT INTO Member_Attends_Games VALUES (25, 'UNCWomens');
 INSERT INTO Member_Attends_Games VALUES (25, 'VirginiaTechWomens');
+INSERT INTO Member_Attends_Games VALUES (26, 'PittMens');
+
 
 -- USER QUERIES
 
@@ -456,10 +526,10 @@ FROM Availability a, Member m, Member_In_Tent t
 WHERE a.memberID = m.ID AND t.tentID = 1 AND m.id = t.memberID;
 
 -- Captain updates schedule/shift query so a member has a shift (for a captain to notify members of their shifts)
-UPDATE Availability SET shift = 't' WHERE memberid = 3 AND startTime = '2017-01-29T10:00:00' AND endTime = '2017-01-29T23:00:00';
-UPDATE Availability SET shift = 't' WHERE memberid = 4 AND startTime = '2017-01-29T00:00:00' AND endTime = '2017-01-29T12:00:00';
-UPDATE Availability SET shift = 't' WHERE memberid = 5 AND startTime = '2017-01-29T12:00:00' AND endTime = '2017-01-29T17:00:00';
-UPDATE Availability SET shift = 't' WHERE memberid = 6 AND startTime = '2017-01-29T17:00:00' AND endTime = '2017-01-29T23:59:00';
+UPDATE Availability SET shift = 't' WHERE memberID = 3 AND startTime = '2017-01-29T10:00:00' AND endTime = '2017-01-29T23:00:00';
+UPDATE Availability SET shift = 't' WHERE memberID = 4 AND startTime = '2017-01-29T00:00:00' AND endTime = '2017-01-29T12:00:00';
+UPDATE Availability SET shift = 't' WHERE memberID = 5 AND startTime = '2017-01-29T12:00:00' AND endTime = '2017-01-29T17:00:00';
+UPDATE Availability SET shift = 't' WHERE memberID = 6 AND startTime = '2017-01-29T17:00:00' AND endTime = '2017-01-29T18:45:36';
 
 -- Captain gets final shifts query (for a captain to see currently scheduled shifts)
 -- For a captain in tent with tent id = 1:
@@ -468,31 +538,31 @@ FROM Availability a, Member m, Member_In_Tent t
 WHERE a.memberID = m.id AND t.tentID = 1 AND m.id = t.memberID AND shift = 't';
 
 -- Member get his/her shifts query (for a member to see his/her scheduled shifts)
--- For a member with m_id = 2:
+-- For a member with m_id = 4:
 SELECT m.name, a.startTime, a.endTime
 FROM Availability a, Member m
 WHERE a.memberID = m.id AND m.id = 4 AND shift = 't';
 
 -- Captain get number of games attended for all members query (to find out who’s slacking)
--- For captain of a tent with tentID = 0:
+-- For captain of a tent with tentID = 5:
 SELECT m.name, m.games_attended
 FROM Member m, Member_In_Tent t
-WHERE t.tentID = 4 AND t.memberID = m.id;
+WHERE t.tentID = 5 AND t.memberID = m.id;
 
 -- Member get his/her games attended list query (to see which games he/she attended)
--- For a member with member ID = 0
+-- For a member with member ID = 14
 SELECT mag.gameName
 FROM Member_Attends_Games mag
 WHERE mag.memberID = 14;
 
 -- Captain get hours logged list for all members query (to find out who’s slacking)
--- For captain of a tent with tentID = 0;
+-- For captain of a tent with tentID = 3;
 SELECT m.name, m.hours_logged
 FROM Member m, Member_In_Tent t
 WHERE t.tentID = 3 AND t.memberID = m.id;
 
 -- Member get his/her hours logged query (to find out how much he/she has done)
--- For a member with member ID = 3
+-- For a member with member ID = 6
 SELECT m.hours_logged
 FROM Member m
-WHERE m.id = 23;
+WHERE m.id = 6;
