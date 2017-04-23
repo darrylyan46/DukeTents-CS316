@@ -447,7 +447,7 @@ INSERT INTO Member_Attends_Games VALUES (25, 'VirginiaTechWomens');
 
 -- Query for member to add times.
 -- For member with m_id = 2, insert user is free from 8am-11am on February 7, 2017:
-INSERT INTO Availability VALUES(2, '2017-02-07T08:00:00', '2017-02-07T11:00:00');
+INSERT INTO Availability VALUES(2, '2017-02-07T08:00:00', '2017-02-07T11:00:00', 'f');
 
 -- Get availabilities for every tent member query (for a captain to create a schedule or a member to see availabilities)
 -- For tent with tentID = 1:
