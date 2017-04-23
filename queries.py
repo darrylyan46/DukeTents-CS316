@@ -13,6 +13,14 @@ def getTentMembers(db, tid):
                                 , dict(id=tid))
     return [member for member in members]
 
+def checkAvailability(db, mid, startTime, endTime):
+    '''Returns an availability for Member with id = mid at startTime, endTime'''
+    avail = db.session.query(models.Availability)\
+            .filter(models.Availability.memberID = mid and \
+            models.Availability.startTime = startTime \
+            and models.Availability.endTime = endTime)
+    return avail
+
 def getTent(db, tid):
     '''Returns Tent tuple with id = tid'''
     return db.session.query(models.Tent).filter(models.Tent.id == tid).one()

@@ -77,10 +77,6 @@ def memberData(userid):
     data = queries.getAllMemberAvailabilities(db, userid)
     return jsonify([dict(d) for d in data])
 
-@app.route('/userProfile/<int:userid>/enterSchedule')
-def enterSchedule(userid):
-    return
-
 @app.template_filter('pluralize')
 def pluralize(number, singular='', plural='s'):
     return singular if number in (0, 1) else plural

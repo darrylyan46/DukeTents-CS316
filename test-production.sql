@@ -36,11 +36,11 @@ gameName VARCHAR(30) NOT NULL REFERENCES AttendanceGames(name),
 PRIMARY KEY (memberID, gameName));
 
 -- Begin production dataset
-INSERT INTO Tent VALUES (0, 'apple', 'white');
-INSERT INTO Tent VALUES (1, 'banana', 'white');
+INSERT INTO Tent VALUES (0, 'apple', 'black');
+INSERT INTO Tent VALUES (1, 'banana', 'blue');
 INSERT INTO Tent VALUES (2, 'carrot', 'white');
-INSERT INTO Tent VALUES (3, 'date', 'white');
-INSERT INTO Tent VALUES (4, 'eggplant', 'white');
+INSERT INTO Tent VALUES (3, 'date', 'black');
+INSERT INTO Tent VALUES (4, 'eggplant', 'blue');
 INSERT INTO Tent VALUES (5, 'fig', 'white');
 
 INSERT INTO Member VALUES (0, 'Anna', 3, 2, 't');

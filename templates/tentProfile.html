@@ -21,10 +21,31 @@
             <li> <a href="{{ url_for('userProfile', userid=member.id) }}"> {{ member.name }} </a> </li>
         {% endfor %}
     </ul>
+    <div id='external-events'>
+      <h4> Shifts </h4>
+      <div class='fc-event'>Day Shift</div>
+      <div class='fc-event'>Night Shift</div>
+    </div>
     <div id='calendar'></div>
 </body>
 <script>
     $(document).ready(function() {
+      // Load external events
+      $('#external-events .fc-event').each(function() {
+        // store data so the calendar knows to render an event upon drop
+        $(this).data('event', {
+          title: $.trim($(this).text()), // use the element's text as the event title
+          stick: true // maintain when user navigates (see docs on the renderEvent method)
+        });
+
+        // make the event draggable using jQuery UI
+        $(this).draggable({
+          zIndex: 999,
+          revert: true,      // will cause the event to go back to its
+          revertDuration: 0  //  original position after the drag
+        });
+      });
+
       var members = [];
       {% for tenter in tenters %}
       var id = String.fromCharCode({{tenter.id}} + 97);
@@ -36,9 +57,12 @@
         title: name
       });
       {% endfor %}
+
     $('#calendar').fullCalendar({
         // put your options and callbacks here
         now: '2017-01-15',
+        editable: true,
+        droppable: true,
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
         defaultView: 'timelineDay',
         header: {
@@ -48,6 +72,7 @@
         },
         resourceLabelText: 'Members',
         resources: members,
+        eventOverlap: false,
         events: function(start, end, timezone, callback){
           $.ajax({
             url: $(location).attr('href') + '/data',
@@ -72,6 +97,16 @@
               callback(events);
             }
           });
+        },
+        drop: function(date, jsEvent, ui, resourceId) {
+          console.log('drop', date.format(), resourceId);
+          // is the "remove after drop" checkbox checked?
+        },
+        eventReceive: function(event) { // called when a proper external event is dropped
+          console.log('eventReceive', event);
+        },
+        eventDrop: function(event) { // called when an event (already on the calendar) is moved
+          console.log('eventDrop', event);
         }
     })
     });
