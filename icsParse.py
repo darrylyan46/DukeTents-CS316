@@ -22,12 +22,9 @@ def readFile(data):
         start = event.decoded('dtstart').replace(tzinfo=None) - timedelta(minutes=25)
         end = event.decoded('dtend').replace(tzinfo=None) + timedelta(minutes=25)
 
-        if start < datetime(2017, 1, 11):
-            continue
-        if start > datetime(2017, 2, 3):
-            break
-
-        time = str(start) + " to " + str(end)
+        startTime = str(start).replace(" ", "T")
+        endTime = str(start).replace(" ", "T")
+        time = (startTime, endTime)
 
         if start.date() not in times.keys():
             times[start.date()] = []

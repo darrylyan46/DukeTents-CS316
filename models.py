@@ -57,14 +57,14 @@ class Availability(db.Model):
     __tablename__ = 'availability'
     memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
                          primary_key=True)
-    startTime = db.Column('date', db.String(30), primary_key=True)
-    endTime = db.Column('time', db.String(30), primary_key=True)
+    startTime = db.Column('start_time', db.String(30), primary_key=True)
+    endTime = db.Column('end_time', db.String(30), primary_key=True)
     shift = db.Column('shift', db.Boolean)
 
-    def __init__(self, memberID, date, time, shift=False):
+    def __init__(self, memberID, startTime, endTime, shift=False):
         self.memberID = memberID
-        self.date = date
-        self.time = time
+        self.startTime = startTime
+        self.endTime = endTime
         self.shift = shift
 
 class AttendanceGames(db.Model):

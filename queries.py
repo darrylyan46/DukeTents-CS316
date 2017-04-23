@@ -44,3 +44,9 @@ def getTentAvailabilities(db, tid):
                                  WHERE m.tentID = :id AND a.memberID = m.memberID AND m1.id = a.memberID""",
                                 dict(id=tid))
     return [d for d in data]
+
+def insertAvailabilities(db, avail):
+    '''Inserts Availability tuple into the database from Availability object'''
+    db.session.execute("""INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)""",
+                        dict(mid=avail.memberID, startTime=avail.startTime, endTime=avail.endTime, bool=avail.shift))
+    return

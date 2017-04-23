@@ -7,15 +7,24 @@
     <title>Title</title>
     <!-- Stylesheets and JS for FullCalendar support -->
     <link rel="stylesheet" href={{ url_for('static', filename='css/fullcalendar.css') }}>
-    <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
-    <link rel="stylesheet" href={{ url_for('static', filename='scheduler.css') }}>
+    <!--<link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }}>-->
     <script src={{ url_for('static', filename='js/moment.js') }}></script>
     <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
-    <script src={{ url_for('static', filename='js/scheduler.js') }}></script>
 </head>
 <body>
     <h1> Welcome {{ user.name }}! </h1>
-    <br> <br>
+    <br>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-success alert-dismissable" role="alert">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+        <strong>Success!</strong>{{ message }}
+      </div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <br>
     <h3> Hours logged: {{ user.hours_Logged | string }}</h3>
     <h3> Games attended: {{ user.games_Attended | string }}</h3>
     <br>
@@ -35,7 +44,7 @@
               </div>
               <div class="col-xs-6">
                 <h5>iCalendar File</h5>
-                <img src="http://braceit.net/wp-content/uploads/2016/04/Calendario.png" class="img-rounded" onclick="go_to_iCalendar()">
+                <img src="http://braceit.net/wp-content/uploads/2016/04/Calendario.png" class="img-rounded" onclick="go_to_iCalendar()" />
               </div>
             </div>
           </div>
@@ -64,6 +73,7 @@
         </div>
       </div>
     </div>
+
     <div id='calendar'></div>
 </body>
 
@@ -79,6 +89,7 @@ function go_to_iCalendar() {
     // page is now ready, initialize the calendar...
     $('#calendar').fullCalendar({
         // put your options and callbacks here
+        now: '2017-01-15',
         customButtons: {
           downloadCalendar: {
           text: 'Download Calendar',

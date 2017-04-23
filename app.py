@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, jsonify
+from flask import Flask, render_template, redirect, url_for, request, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from icsParse import readFile
 import models
@@ -44,7 +44,7 @@ def signup():
         return render_template(url_for('userProfile', user=newUser.id))
 
 @app.route('/tentProfile/<int:tentid>')
-def tentProfile(tentid):
+def tentProfile(tentid, methods=['GET', 'POST']):
     tent = queries.getTent(db, tentid)
     members = queries.getTentMembers(db, tentid)
     return render_template('tentProfile.html', tent=tent, tenters=members)
@@ -54,18 +54,22 @@ def tentData(tentid):
     data = queries.getTentAvailabilities(db, tentid)
     return jsonify([dict(d) for d in data])
 
-@app.route('/userProfile/<int:userid>')
-def userProfile(userid):
-    user = db.session.query(models.Member)\
-            .filter(models.Member.id == userid).one()
-    if request.method == "POST":
-        f = request.form['sched']
-        timeDict = readFile(f)
-        for date, events in timeDict:
-            for event in events:
-                newEvent = models.Availability(userid, date, event, False)
-                db.session.add(newEvent)
-        db.session.commit()
+@app.route('/userProfile/<int:userid>', methods=['GET', 'POST'])
+def userProfile(userid=None):
+    user = queries.getMember(db, userid)
+    if request.method == 'POST':
+        f = request.files['sched']
+        timeDict = readFile(f.read())
+        for date in timeDict:
+            for startTime, endTime in timeDict[date]:
+                try:
+                    db.session.execute('INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)',
+                                        dict(mid=userid, startTime=startTime, endTime=endTime, bool=False))
+                    db.session.commit()
+                except Exception as e:
+                    db.session.rollback()
+                    raise e
+        flash('Calendar data was successfully uploaded!')
     return render_template('userProfile.html', user=user)
 
 @app.route('/userProfile/<int:userid>/data')
@@ -82,4 +86,4 @@ def pluralize(number, singular='', plural='s'):
     return singular if number in (0, 1) else plural
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
