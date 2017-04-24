@@ -119,10 +119,16 @@ input[type=submit]:hover {
 }
 body {
   background: #001A57; /* fallback for old browsers */
-  background: -webkit-linear-gradient(right, #001A57, #2f4d95);
+background: -webkit-linear-gradient(right, #001A57, #2f4d95);
   background: -moz-linear-gradient(right, #001A57, #2f4d95);
   background: -o-linear-gradient(right, #001A57, #2f4d95);
   background: linear-gradient(to left, #001A57, #2f4d95);
+  background-image: url("http://cdn.c.photoshelter.com/img-get/I00002y5.vPKK7tQ/s/850/850/best22.jpg");
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;      
