@@ -16,9 +16,9 @@ def getTentMembers(db, tid):
 def checkAvailability(db, mid, startTime, endTime):
     '''Returns an availability for Member with id = mid at startTime, endTime'''
     avail = db.session.query(models.Availability)\
-            .filter(models.Availability.memberID = mid and \
-            models.Availability.startTime = startTime \
-            and models.Availability.endTime = endTime)
+            .filter(models.Availability.memberID == mid and \
+            models.Availability.startTime == startTime \
+            and models.Availability.endTime == endTime).one()
     return avail
 
 def getTent(db, tid):

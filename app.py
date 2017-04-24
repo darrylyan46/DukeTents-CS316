@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from icsParse import readFile
+import os
 import models
 import forms
 import queries
@@ -9,6 +10,19 @@ app = Flask(__name__)
 app.secret_key = 's3cr3t'
 app.config.from_object('config')
 db = SQLAlchemy(app, session_options={'autocommit': False})
+
+@app.context_processor
+def override_url_for():
+    return dict(url_for=dated_url_for)
+
+def dated_url_for(endpoint, **values):
+    if endpoint == 'static':
+        filename = values.get('filename', None)
+        if filename:
+            file_path = os.path.join(app.root_path,
+                                     endpoint, filename)
+            values['q'] = int(os.stat(file_path).st_mtime)
+    return url_for(endpoint, **values)
 
 @app.route('/')
 def all_tents():
@@ -63,7 +77,9 @@ def userProfile(userid=None):
         for date in timeDict:
             for startTime, endTime in timeDict[date]:
                 try:
-                    db.session.execute('INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)',
+                    #Check that there is no conflicting availability DEBUG PLS~~~~~~~
+                    if queries.checkAvailability(db, userid, startTime, endTime) is None:
+                        db.session.execute('INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)',
                                         dict(mid=userid, startTime=startTime, endTime=endTime, bool=False))
                     db.session.commit()
                 except Exception as e:
