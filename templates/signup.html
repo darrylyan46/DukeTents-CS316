@@ -3,17 +3,19 @@
 {% block content %}
 <!DOCTYPE html>
 <html>
-<body>
+    <head>      <link rel="stylesheet" type="text/css" href="../static/css/test.css">
+</head>
+<body><div class="login-page">
+  <div class="form">
+    <form class="login-form">
 <form action="{{ url_for('signup') }}" method="post">
   <fieldset>
-    <legend>Sign Up:</legend>
-    Full Name:<br>
-    <input type="text" name="username"><br><br>
-    Tent ID:<br>
-    <input type="text" name="tentid">
-    <br><br>
-    <input type="checkbox" onclick="isCaptainForm()" id="captain" name="captain" value="Captain"> Captain?
-    <br>
+    <p class="title">Register</p>
+    <input type="text" placeholder="username"><br><br>
+    <input type="text" placeholder="tent ID">
+    <input type="checkbox" onclick="isCaptainForm()" id="captain" name="captain" value="Captain"/>Captain?<br>
+
+      
       <div id="ifCaptain" style="display:none"> <br>
           What color is your tent? <br>
           <input type="radio" name="color" value="Black"> Black <br>
@@ -24,7 +26,7 @@
       </div>
     <input type="submit" value="Submit">
   </fieldset>
-</form>
+        </form></form></div></div>
 </body>
 <script type="text/javascript">
     function isCaptainForm() {
