@@ -25,6 +25,12 @@ def getTent(db, tid):
     '''Returns Tent tuple with id = tid'''
     return db.session.query(models.Tent).filter(models.Tent.id == tid).one()
 
+def getTentFromUsername(db,uid):
+    '''Returns Tent tuple from User id = uid'''
+    tents = db.session.execute("""SELECT * FROM Member_In_Tent WHERE :id = tentID""",
+                                   dict(id=uid))
+    return [tent for tent in tents][0]
+
 def getMember(db, uid):
     '''Returns Member tuple with id = uid'''
     return db.session.query(models.Member).filter(models.Member.id == uid).one()
