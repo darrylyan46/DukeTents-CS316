@@ -141,9 +141,8 @@ def userProfile(userid=None):
         for date in timeDict:
             for startTime, endTime in timeDict[date]:
                 try:
-                    #Check that there is no conflicting availability DEBUG PLS~~~~~~~
-                    if queries.checkAvailability(db, userid, startTime, endTime) is None:
-                        db.session.execute('INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)',
+                    if queries.checkAvailability(db, userid, startTime, endTime):
+                        db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)''',
                                         dict(mid=userid, startTime=startTime, endTime=endTime, bool=False))
                     db.session.commit()
                 except Exception as e:
