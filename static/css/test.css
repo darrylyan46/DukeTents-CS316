@@ -150,7 +150,7 @@ h2 {
     font-size: 25px;
     font-weight: 300;
     line-height: 32px;
-    margin: 0 0 72px;
+    margin: 0 0 30px;
     text-align: center;
 }
 h3 {
@@ -159,13 +159,15 @@ h3 {
     font-size: 25px;
     font-weight: 300;
     line-height: 32px;
-    margin: 0 0 72px;
+    margin: 20 0 10px;
     text-align: center;
 }
 #footer {
 	clear:both;
-	float:left;
-	width:100%;
+	width:15%;
+    margin: auto;
+    padding-top: 30px;
+    padding-bottom: 30px;
 }
 #footer p {
 	margin-left:2%;
@@ -175,8 +177,9 @@ h3 {
 /* Start of Column CSS */
 #container2 {
 	clear:left;
-	float:left;
-	width:100%;
+	float:center;
+	width:75%;
+    margin: auto;
 	overflow:hidden;
 	background:#D1BEB0; /* column 2 background colour */
 }
