@@ -1,11 +1,10 @@
 {% extends 'layout.html' %}
-{% block heading %} Log in {% endblock %}
 {% block content %}
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="../static/css/test.css">
+    <link rel="stylesheet" href={{ url_for('static', filename='css/test.css')}}>
         <title>Login Page</title>
     </head>
     <body>

@@ -5,6 +5,14 @@
   padding: 8% 0 0;
   margin: auto;
 }
+.signup-page {
+  width: 400px;
+  padding: 8% 0 0;
+    margin-top: -75px;
+    margin-right: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+}
 .form {
   position: relative;
   z-index: 1;
@@ -158,9 +166,11 @@ font-family: Arial, sans-serif;
  font-size: 44px;
  line-height: 44px;
  letter-spacing: -2px;
+text-transform: capitalize;
  font-weight: bold;
  text-align: center;
 }
+
 h2 {
     color: #ffffff;
     font-family: 'Open Sans', sans-serif;
@@ -180,10 +190,72 @@ h3 {
     text-align: center;
 }
 
-#container1 {
-	float:center;
-	width:100%;
-	position:relative;
-	background:#ffffff; /* column 1 background colour */
+h4 {
+    color: #fff;
+    font-family: "Lucida Sans Unicode";
+    font-size: 20px;
+    line-height: 20px;
+    margin: 20 0 10px;
+    text-align: center;
 }
 
+h4 a:link {
+    color: #7ab0e6;
+}
+
+h4 a:hover {
+    color: #fff;
+}
+
+
+#container1 {
+	float:left;
+	width:75%;
+    margin-bottom: 100px;
+}
+
+#col1 {
+	float:left;
+	width:100%;
+    margin: 0px 100px 0px 175px;
+    background:#ffffff; /* column 1 background colour */
+	overflow:hidden;
+}
+
+.boxed {
+    width: 200px;
+    margin:0 auto;
+}
+
+#calendar{
+    margin-right:35px;
+}
+
+#abar{
+    background:#EEEEEE; /* column 1 background colour */
+    width: 135px;
+    height: 700px;
+}
+
+
+input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  margin:0;
+  vertical-align: bottom;
+  position: relative;
+  top: -1px;
+  *overflow: hidden;
+}
+
+input[type="radio"] {
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  margin:0;
+  vertical-align: bottom;
+  position: relative;
+  top: -1px;
+  *overflow: hidden;
+}

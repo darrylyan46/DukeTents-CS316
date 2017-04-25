@@ -8,7 +8,7 @@
     <!-- Stylesheets and JS for FullCalendar support -->
     <link rel="stylesheet" href={{ url_for('static', filename='css/fullcalendar.css') }}>
     <!--<link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }}>-->
-    <link rel="stylesheet" type="text/css" href="../static/css/test.css">
+    <link rel="stylesheet" href={{ url_for('static', filename='css/test.css')}}>
     <script src="{{ url_for('static', filename='js/gcal.js') }}"></script>
     <script src={{ url_for('static', filename='js/moment.js') }}></script>
     <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
@@ -78,10 +78,14 @@
       </div>
     </div>
 
-    <div id='calendar' style="width:75%; margin:0 auto;"></div>
+<div id="container1">
+    <div id="col1">
+    <div id='calendar'></div>
+   
+    </div></div>
 <br><br><br>
 
-</body>
+</body><br><br><br><br>
 
 <script>
 function go_to_iCalendar() {
