@@ -19,14 +19,15 @@ def getTent(db, tid):
 
 def getTentFromUsername(db, uid):
     '''Returns Tent tuple from User id = uid'''
-    tents = db.session.execute("""SELECT * FROM Member_In_Tent WHERE :id = tent_id""",
-                                   dict(id=uid))
-    return [tent for tent in tents][0]
+    tent = db.session.execute("""SELECT * FROM Member_In_Tent WHERE :id = member_id""",
+                                   dict(id=uid)).fetchone()
+    return tent
 def getIdFromEmail(db, email):
-    '''Returns integer Tent.id from email'''
-    uid_result = db.session.execute('''SELECT t.id FROM Member m, Member_In_Tent t
-                                    WHERE m.email = :email AND m.id = t.member_id''')
-    return uid_result[0]
+    '''Returns tuple of matching Member and Tent from email'''
+    uid_result = db.session.execute('''SELECT * FROM Member m, Member_In_Tent t
+                                    WHERE m.email = :email AND m.id = t.member_id''',
+                                    dict(email=email)).fetchone()
+    return uid_result
 
 def getMember(db, uid):
     '''Returns Member tuple with id = uid'''
@@ -58,42 +59,38 @@ def getTentAvailabilities(db, tid):
 
 def insertAvailabilities(db, avail):
     '''Inserts Availability tuple into the database from Availability object'''
-    db.session.execute("""INSERT INTO Availability VALUES(:mid, :start_time, :end_time, :bool)""",
+    db.session.execute("""INSERT INTO Availability VALUES (:mid, :start_time, :end_time, :bool)""",
                         dict(mid=avail.member_id, start_time=avail.start_time, end_time=avail.end_time, bool=avail.shift))
     return None
 
 def insertNewUser(db, email, name, permissions, tentid, color, tent_name):
     if permissions:
         try:
-            member_id = db.session.execute('''INSERT INTO Member
-                                (email, name, hours_logged, games_attended, permissions)
-                                VALUE (:email, :name, 0, 0, :permissions) RETURNING id''',
-                                dict(email=email, name=name, permissions=permissions))
-            tid = db.session.execute('''INSERT INTO Tent
-                            (name, color)
-                            VALUE (:tent_name, :color) RETURNING id''',
-                            dict(tent_name=tent_name, color=color))
+            member_id = db.session.execute('''INSERT INTO Member (email, name, hours_logged, games_attended, permissions)
+                                        VALUES (:email, :name, 0, 0, :permissions) RETURNING id''',
+                                dict(email=email, name=name, permissions=permissions)).fetchone()
+            tid = db.session.execute('''INSERT INTO Tent (name, color)
+                            VALUES (:tent_name, :color) RETURNING id''',
+                            dict(tent_name=tent_name, color=color)).fetchone()
             db.session.execute('''INSERT INTO Member_In_Tent
                                 (tent_id, member_id)
-                                VALUE (:mid, :tid)''',
-                                dict(mid=member_id, tid=tid))
+                                VALUES (:tid, :mid)''',
+                                dict(tid=tid.id, mid=member_id.id))
             db.session.commit()
-            return member_id
+            return member_id.id
         except Exception as e:
             db.session.rollback()
             raise e
     else:
         try:
-            member_id = db.session.execute('''INSERT INTO Member
-                                (email, name, hours_logged, games_attended, permissions)
-                                VALUE (:email, :name, 0, 0, :permissions) RETURNING id''',
-                                dict(email=email, name=name, permissions=permissions))
+            member_id = db.session.execute('''INSERT INTO Member (email, name, hours_logged, games_attended, permissions) VALUES (:email, :name, 0, 0, :permissions) RETURNING id''',
+                                dict(email=email, name=name, permissions=permissions)).fetchone()
             db.session.execute('''INSERT INTO Member_In_Tent
                                 (tent_id, member_id)
-                                VALUE (:mid, :tid)''',
-                                dict(mid=member_id, tid=tentid))
+                                VALUES (:tid, :mid)''',
+                                dict(tid=tentid, mid=member_id.id))
             db.session.commit()
-            return member_id
+            return member_id.id
         except Exception as e:
             db.session.rollback()
             raise e

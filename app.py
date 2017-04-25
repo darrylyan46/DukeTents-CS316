@@ -69,7 +69,8 @@ def googleauth():
           if not db.session.query(db.exists().where(models.Member.email == email)).scalar():
               return redirect(url_for('signup'))
           else:
-              return redirect(url_for('tentProfile', queries.getIdFromEmail(db, email)))
+              tid = queries.getIdFromEmail(db, email).tent_id
+              return redirect(url_for('tentProfile', tentid=tid))
           #tentid = queries.getTentFromUsername(db, email)
           #test case, Anna -- for some reason, test case does not work.
           # tentid = queries.getTentFromUsername(db,0)
@@ -152,11 +153,12 @@ def signup():
         permissions = request.form.get('captain')
         tentname = request.form['tentName']
         color = request.form['color']
-        #uid = queries.insertNewUser(db, email, name, permissions, tent_id, color, tentname)
-        #return url_for('userProfile', user=queries.getMember(db, uid))
+        uid = queries.insertNewUser(db, email, name, permissions, tent_id, color, tentname)
+        tid = tentid=queries.getTentFromUsername(db, uid).tent_id
+        return redirect(url_for('tentProfile', tentid=tid))
 
-@app.route('/tentProfile/<int:tentid>')
-def tentProfile(tentid, methods=['GET', 'POST']):
+@app.route('/tentProfile/<int:tentid>', methods=['GET', 'POST'])
+def tentProfile(tentid):
     tent = queries.getTent(db, tentid)
     members = queries.getTentMembers(db, tentid)
     return render_template('tentProfile.html', tent=tent, tenters=members)
