@@ -121,6 +121,12 @@
             },
             success: function(doc) {
               var events = [];
+              var color = "red";
+              var title = $(this).attr('name') + ' Unable to Attend Shift';
+              if ($(this).attr('shift')) {
+                color = "blue";
+                title = $(this).attr('name') + ' Has Shift';
+              }
               $.each(doc, function(key, value) {
                 events.push({
                   title: $(this).attr('name') + ' Unable to Attend Shift',
@@ -129,7 +135,7 @@
                   end: $(this).attr('end_time'),
                   allDay: false,
                   editable: false,
-                  backgroundColor: 'red'
+                  backgroundColor: color
                 });
               });
               callback(events);
@@ -147,7 +153,7 @@
         },
         eventDrop: function(event) { // called when an event (already on the calendar) is moved
           console.log('eventDrop', event);
-        },
+        }
     });
     $('#calendar').fullCalendar('refetchEvents');
   });

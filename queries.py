@@ -38,7 +38,7 @@ def checkAvailability(db, mid, startTime, endTime):
     true_val = db.session.query(db.exists().where(models.Availability.member_id == mid \
                 and models.Availability.start_time == startTime \
                 and models.Availability.end_time == endTime)).scalar()
-    return true_val
+    return true_val is not None
 
 def memberExists(db, mid):
     ''' Returns boolean value indicating whether a member with id = :mid exists'''
