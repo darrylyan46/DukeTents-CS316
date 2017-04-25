@@ -8,10 +8,13 @@
     <!-- Stylesheets and JS for FullCalendar support -->
     <link rel="stylesheet" href={{ url_for('static', filename='css/fullcalendar.css') }}>
     <!--<link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }}>-->
+    <link rel="stylesheet" type="text/css" href="../static/css/test.css">
     <script src={{ url_for('static', filename='js/moment.js') }}></script>
     <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
 </head>
 <body>
+    <div id="header">
+
     <h1> Welcome {{ user.name }}! </h1>
     <br>
     {% with messages = get_flashed_messages() %}
@@ -25,11 +28,39 @@
     {% endif %}
     {% endwith %}
     <br>
-    <h3> Hours logged: {{ user.hours_logged | string }}</h3>
-    <h3> Games attended: {{ user.games_attended | string }}</h3>
     <br>
+    <h2> Hours logged: {{ user.hours_Logged | string }} | Games attended: {{ user.games_Attended | string }}<br><br>
+    <b>Choose your import method:</b></h2>
+            </div>
+    <div id="container2">
+	<div id="container1">
+		<div id="col1">
+            			<!-- Column one start -->
+			<h3>Google Calendar</h3>
+            <center><img src="https://lh3.ggpht.com/oGR9I1X9No3SfFEXrq655tETtVVzI3jIphhmEVPGPEVuM5gfwh8lOGWHQFf6gjSTvw=w300" class="img-rounded"></center>
+    <center><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#import">Import Calendar</button></center> <br> <br>
+			<!-- Column one end -->
+		</div>
+		<div id="col2">
+			<!-- Column two start -->
+			<h3>iCalendar</h3>
+            <center><img src="http://braceit.net/wp-content/uploads/2016/04/Calendario.png" class="img-rounded" onclick="go_to_iCalendar()" /></center>
+            <center><p>Select an iCalendar file from your computer:</p></center>
+            <form action="{{ url_for('userProfile', userid=user.id) }}" method="POST" enctype="multipart/form-data">
+            <center><input name="sched" type="file"></center> <br> <br>
+
+			<!-- Column two end -->
+		</div>
+	</div>
+    </div>
+        <div id="footer">
+                  <input type="submit" class="btn btn-primary" value="Submit">
+</div>
+
+<!--
     <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#import">Import Calendar</button> <br> <br>
     <!-- Modals -->
+        <!--
     <div class="modal fade" id="import" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -75,6 +106,8 @@
     </div>
 
     <div id='calendar'></div>
+-->
+
 </body>
 
 <script>
