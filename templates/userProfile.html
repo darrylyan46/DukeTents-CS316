@@ -19,14 +19,14 @@
       {% for message in messages %}
       <div class="alert alert-success alert-dismissable" role="alert">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-        <strong>Success!</strong>{{ message }}
+        <strong>Success!</strong>   {{ message }}
       </div>
       {% endfor %}
     {% endif %}
     {% endwith %}
     <br>
-    <h3> Hours logged: {{ user.hours_Logged | string }}</h3>
-    <h3> Games attended: {{ user.games_Attended | string }}</h3>
+    <h3> Hours logged: {{ user.hours_logged | string }}</h3>
+    <h3> Games attended: {{ user.games_attended | string }}</h3>
     <br>
     <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#import">Import Calendar</button> <br> <br>
     <!-- Modals -->
@@ -111,8 +111,8 @@ function go_to_iCalendar() {
               $.each(doc, function(key, value) {
                 events.push({
                   title: $(this).attr('name') + ' Unable to Attend Shift',
-                  start: $(this).attr('starttime'),
-                  end: $(this).attr('endtime'),
+                  start: $(this).attr('start_time'),
+                  end: $(this).attr('end_time'),
                   allDay: false,
                   editable: false,
                   backgroundColor: 'red'

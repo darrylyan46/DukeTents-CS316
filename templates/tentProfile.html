@@ -73,9 +73,9 @@
                   $.each(doc, function(key, value) {
                     events.push({
                       title: $(this).attr('name') + ' Unable to Attend Shift',
-                      resourceId: String.fromCharCode($(this).attr('memberid') + 97),
-                      start: $(this).attr('starttime'),
-                      end: $(this).attr('endtime'),
+                      resourceId: String.fromCharCode($(this).attr('member_id') + 97),
+                      start: $(this).attr('start_time'),
+                      end: $(this).attr('end_time'),
                       allDay: false,
                       editable: false,
                       backgroundColor: 'red'

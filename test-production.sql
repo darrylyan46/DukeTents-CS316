@@ -9,21 +9,21 @@ CREATE TABLE Tent
 CREATE TABLE Member
 (id INTEGER PRIMARY KEY NOT NULL,
  name VARCHAR(30) NOT NULL,
- hours_Logged REAL NOT NULL,
- games_Attended INTEGER NOT NULL,
+ hours_logged REAL NOT NULL,
+ games_attended INTEGER NOT NULL,
  permissions BOOLEAN);
 
 CREATE TABLE Member_In_Tent
-(tentID INTEGER NOT NULL REFERENCES Tent(id),
- memberID INTEGER NOT NULL REFERENCES Member(id),
- PRIMARY KEY (tentID, memberID));
+(tent_id INTEGER NOT NULL REFERENCES Tent(id),
+ member_id INTEGER NOT NULL REFERENCES Member(id),
+ PRIMARY KEY (tent_id, member_id));
 
 CREATE TABLE Availability
-(memberID INTEGER NOT NULL REFERENCES Member(id),
- startTime VARCHAR(30) NOT NULL,
- endTime VARCHAR(30) NOT NULL,
+(member_id INTEGER NOT NULL REFERENCES Member(id),
+ start_time VARCHAR(30) NOT NULL,
+ end_time VARCHAR(30) NOT NULL,
  shift BOOLEAN,
- PRIMARY KEY (memberID, startTime, endTime));
+ PRIMARY KEY (member_id, start_time, end_time));
 
 CREATE TABLE AttendanceGames
 (name VARCHAR(30) NOT NULL PRIMARY KEY,
@@ -31,18 +31,18 @@ CREATE TABLE AttendanceGames
  time VARCHAR(30) NOT NULL);
 
 CREATE TABLE Member_Attends_Games
-(memberID INTEGER NOT NULL REFERENCES Member(id),
-gameName VARCHAR(30) NOT NULL REFERENCES AttendanceGames(name),
-PRIMARY KEY (memberID, gameName));
+(member_id INTEGER NOT NULL REFERENCES Member(id),
+game_name VARCHAR(30) NOT NULL REFERENCES AttendanceGames(name),
+PRIMARY KEY (member_id, game_name));
 
 -- DYNAMIC QUERIES
 
 -- Trigger that updates tables if Member is deleted
 CREATE FUNCTION TF_delete_Member_ref() RETURNS TRIGGER AS $$
  BEGIN
- 	DELETE FROM Member_In_Tent WHERE OLD.id = memberID;
- 	DELETE FROM Availability WHERE OLD.id = memberID;
- 	DELETE FROM Member_Attends_Games WHERE OLD.id = memberID;
+ 	DELETE FROM Member_In_Tent WHERE OLD.id = member_id;
+ 	DELETE FROM Availability WHERE OLD.id = member_id;
+ 	DELETE FROM Member_Attends_Games WHERE OLD.id = member_id;
  	RETURN OLD;
  END;
  $$ LANGUAGE plpgsql;
@@ -61,14 +61,14 @@ CREATE TRIGGER TG_delete_Member
 CREATE FUNCTION TF_update_hoursLogged_ref() RETURNS TRIGGER AS
 $BODY$
  DECLARE
-    startR REAL := substring(NEW.startTime from 12 for 2)::REAL + substring(NEW.startTime from 15 for 2)::REAL/60 + substring(NEW.startTime from 18 for 2)::REAL/3600;
-    endR REAL := substring(NEW.endTime from 12 for 2)::REAL + substring(NEW.endTime from 15 for 2)::REAL/60 + substring(NEW.endTime from 18 for 2)::REAL/3600;
+    startR REAL := substring(NEW.start_time from 12 for 2)::REAL + substring(NEW.start_time from 15 for 2)::REAL/60 + substring(NEW.start_time from 18 for 2)::REAL/3600;
+    endR REAL := substring(NEW.end_time from 12 for 2)::REAL + substring(NEW.end_time from 15 for 2)::REAL/60 + substring(NEW.end_time from 18 for 2)::REAL/3600;
     diffR REAL := endR - startR;
  BEGIN
  	IF NEW.shift = 't' THEN
 		UPDATE Member
 		SET hours_logged = hours_logged + diffR
-		WHERE NEW.memberID = id;
+		WHERE NEW.member_id = id;
 	END IF;
 	RETURN NEW;
  END;
@@ -87,7 +87,7 @@ $BODY$
  BEGIN
 	UPDATE Member
 	SET games_attended = games_attended + 1
-	WHERE NEW.memberID = id;
+	WHERE NEW.member_id = id;
 	RETURN NEW;
  END;
 $BODY$ LANGUAGE plpgsql;
@@ -520,46 +520,46 @@ INSERT INTO Member_Attends_Games VALUES (26, 'PittMens');
 INSERT INTO Availability VALUES(2, '2017-02-07T08:00:00', '2017-02-07T11:00:00', 'f');
 
 -- Get availabilities for every tent member query (for a captain to create a schedule or a member to see availabilities)
--- For tent with tentID = 1:
-SELECT m.name, a.startTime, a.endTime
+-- For tent with tent_id = 1:
+SELECT m.name, a.start_time, a.end_time
 FROM Availability a, Member m, Member_In_Tent t
-WHERE a.memberID = m.ID AND t.tentID = 1 AND m.id = t.memberID;
+WHERE a.member_id = m.ID AND t.tent_id = 1 AND m.id = t.member_id;
 
 -- Captain updates schedule/shift query so a member has a shift (for a captain to notify members of their shifts)
-UPDATE Availability SET shift = 't' WHERE memberID = 3 AND startTime = '2017-01-29T10:00:00' AND endTime = '2017-01-29T23:00:00';
-UPDATE Availability SET shift = 't' WHERE memberID = 4 AND startTime = '2017-01-29T00:00:00' AND endTime = '2017-01-29T12:00:00';
-UPDATE Availability SET shift = 't' WHERE memberID = 5 AND startTime = '2017-01-29T12:00:00' AND endTime = '2017-01-29T17:00:00';
-UPDATE Availability SET shift = 't' WHERE memberID = 6 AND startTime = '2017-01-29T17:00:00' AND endTime = '2017-01-29T18:45:36';
+UPDATE Availability SET shift = 't' WHERE member_id = 3 AND start_time = '2017-01-29T10:00:00' AND end_time = '2017-01-29T23:00:00';
+UPDATE Availability SET shift = 't' WHERE member_id = 4 AND start_time = '2017-01-29T00:00:00' AND end_time = '2017-01-29T12:00:00';
+UPDATE Availability SET shift = 't' WHERE member_id = 5 AND start_time = '2017-01-29T12:00:00' AND end_time = '2017-01-29T17:00:00';
+UPDATE Availability SET shift = 't' WHERE member_id = 6 AND start_time = '2017-01-29T17:00:00' AND end_time = '2017-01-29T18:45:36';
 
 -- Captain gets final shifts query (for a captain to see currently scheduled shifts)
 -- For a captain in tent with tent id = 1:
-SELECT m.name, a.startTime, a.endTime
+SELECT m.name, a.start_time, a.end_time
 FROM Availability a, Member m, Member_In_Tent t
-WHERE a.memberID = m.id AND t.tentID = 1 AND m.id = t.memberID AND shift = 't';
+WHERE a.member_id = m.id AND t.tent_id = 1 AND m.id = t.member_id AND shift = 't';
 
 -- Member get his/her shifts query (for a member to see his/her scheduled shifts)
 -- For a member with m_id = 4:
-SELECT m.name, a.startTime, a.endTime
+SELECT m.name, a.start_time, a.end_time
 FROM Availability a, Member m
-WHERE a.memberID = m.id AND m.id = 4 AND shift = 't';
+WHERE a.member_id = m.id AND m.id = 4 AND shift = 't';
 
 -- Captain get number of games attended for all members query (to find out who’s slacking)
--- For captain of a tent with tentID = 5:
+-- For captain of a tent with tent_id = 5:
 SELECT m.name, m.games_attended
 FROM Member m, Member_In_Tent t
-WHERE t.tentID = 5 AND t.memberID = m.id;
+WHERE t.tent_id = 5 AND t.member_id = m.id;
 
 -- Member get his/her games attended list query (to see which games he/she attended)
 -- For a member with member ID = 14
-SELECT mag.gameName
+SELECT mag.game_name
 FROM Member_Attends_Games mag
-WHERE mag.memberID = 14;
+WHERE mag.member_id = 14;
 
 -- Captain get hours logged list for all members query (to find out who’s slacking)
--- For captain of a tent with tentID = 3;
+-- For captain of a tent with tent_id = 3;
 SELECT m.name, m.hours_logged
 FROM Member m, Member_In_Tent t
-WHERE t.tentID = 3 AND t.memberID = m.id;
+WHERE t.tent_id = 3 AND t.member_id = m.id;
 
 -- Member get his/her hours logged query (to find out how much he/she has done)
 -- For a member with member ID = 6
