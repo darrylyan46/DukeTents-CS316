@@ -2,7 +2,7 @@
 {% block content %}
 <!DOCTYPE html>
 <html>
-    <head>      
+    <head>
     <link rel="stylesheet" href={{ url_for('static', filename='css/test.css')}}>
 </head>
 <body><div class="signup-page">
@@ -10,18 +10,11 @@
 <form action="{{ url_for('signup') }}" method="POST">
   <fieldset>
     <p class="title">Register</p>
-<<<<<<< HEAD
     <label for="name">Your name</label>
     <input id="name" type="text" name="name" placeholder="Your name"><br><br>
     <label id="id_label" for="tid">Tent ID (if joining a tent)</label>
     <input id="tid" name="tentid" type="text" placeholder="Tent ID">
     <input type="checkbox" onclick="isCaptainForm()" id="captain" name="captain"/><label for="captain">Captain?</label>
-=======
-    <input type="text" placeholder="username"><br><br>
-    <input type="text" placeholder="tent ID">
-      <label><input type="checkbox" onclick="isCaptainForm()" id="captain" name="captain" value="Captain"/>Captain?</label>
-      
->>>>>>> 4d5c6e11d98a500033104c680cbb553da4458999
 
       <br>
 
