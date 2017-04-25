@@ -181,9 +181,15 @@ h3 {
 }
 
 #container1 {
-	float:center;
-	width:100%;
-	position:relative;
-	background:#ffffff; /* column 1 background colour */
+	float:left;
+	width:75%;
+    margin-bottom: 100px;
 }
 
+#col1 {
+	float:left;
+	width:100%;
+    margin: 0px 100px 0px 175px;
+    background:#ffffff; /* column 1 background colour */
+	overflow:hidden;
+}
