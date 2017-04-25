@@ -10,6 +10,7 @@
     <link rel="stylesheet" href={{ url_for('static', filename='css/externalevents.css')}}>
     <link rel="stylesheet" href={{ url_for('static', filename='css/fullcalendar.css') }}>
     <link rel="stylesheet" href={{ url_for('static', filename='css/scheduler.css') }}>
+    <link rel="stylesheet" type="text/css" href="../static/css/test.css">
     <script src={{ url_for('static', filename='js/moment.js') }}></script>
     <script src={{ url_for('static', filename='js/jquery-ui.min.js')}}></script>
     <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
@@ -99,23 +100,25 @@
         });
     </script>
 </head>
-<body>
+<body class="page">
     <div>
-    <ul>
-        Here are the list of tenters:
+    <center><ul style="font-size:30px;">
+        Tent members:
         {% for member in tenters %}
             <li> <a href="{{ url_for('userProfile', userid=member.id) }}"> {{ member.name }} </a> </li>
         {% endfor %}
-    </ul>
+      </ul>
+    </center> </br> </br>
+    <h2>Tent shift schedule:</h2>
     <div id="wrap">
       <div id='external-events'>
         <h4> Shifts </h4>
         <div id='day' class='fc-event' data-duration='01:00'>Day Shift</div>
         <div id='night' class='fc-event' data-duration='08:00'>Night Shift</div>
       </div>
-      <div id='calendar'></div>
+      <div id='calendar' style="width:75%; margin:0 auto;"></div>
       <div style='clear:both'></div>
-  </div>
+  </div> <br><br><br><br><br>
 </body>
 </html>
 {% endblock %}

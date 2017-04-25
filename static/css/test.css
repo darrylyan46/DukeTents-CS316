@@ -72,6 +72,16 @@ input[type=submit] {
 input[type=submit]:hover {
   background: #1f4e7e;
 }
+
+input[type=checkbox], input[type=radio] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+}
+input[type=radio] {
+    bottom: 2px;
+}
+
 .form .message {
   margin: 15px 0 0;
   color: #333333;
@@ -117,9 +127,10 @@ input[type=submit]:hover {
 .container .info span .fa {
   color: #EF3B3A;
 }
+
 body {
   background: #001A57; /* fallback for old browsers */
-background: -webkit-linear-gradient(right, #001A57, #2f4d95);
+  background: -webkit-linear-gradient(right, #001A57, #2f4d95);
   background: -moz-linear-gradient(right, #001A57, #2f4d95);
   background: -o-linear-gradient(right, #001A57, #2f4d95);
   background: linear-gradient(to left, #001A57, #2f4d95);
@@ -133,6 +144,12 @@ background: -webkit-linear-gradient(right, #001A57, #2f4d95);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;      
 }
+
+body.page{
+    background-image: url('../../static/img/bgpic.png');
+    background-repeat: repeat;
+}
+
 h1 {
 font-family: Arial, sans-serif;
  color: #ffffff;
@@ -162,45 +179,11 @@ h3 {
     margin: 20 0 10px;
     text-align: center;
 }
-#footer {
-	clear:both;
-	width:15%;
-    margin: auto;
-    padding-top: 30px;
-    padding-bottom: 30px;
-}
-#footer p {
-	margin-left:2%;
-	padding-right:2%;
-}
 
-/* Start of Column CSS */
-#container2 {
-	clear:left;
-	float:center;
-	width:75%;
-    margin: auto;
-	overflow:hidden;
-	background:#D1BEB0; /* column 2 background colour */
-}
 #container1 {
-	float:left;
+	float:center;
 	width:100%;
 	position:relative;
-	right:50%;
-	background:#AB9F9D; /* column 1 background colour */
+	background:#ffffff; /* column 1 background colour */
 }
-#col1 { 
-	float:left;
-	width:46%;
-	position:relative;
-	left:52%;
-	overflow:hidden;
-}
-#col2 {
-	float:left;
-	width:46%;
-	position:relative;
-	left:56%;
-	overflow:hidden;
-}
+
