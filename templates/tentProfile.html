@@ -106,7 +106,7 @@
     <center><h4>
         Tent members:
         {% for member in tenters %}
-            <li> <a href="{{ url_for('userProfile', userid=member.id) }}"> {{ member.name }} </a> </li>
+            <a href="{{ url_for('userProfile', userid=member.id) }}"> {{ member.name }}</a>
         {% endfor %}
       </h4>
             </center> </div></br>
@@ -114,12 +114,13 @@
             <div id="container1">
     <div id="col1">
 
-    <div id="wrap">
+        <div id="wrap">          
       <div id='external-events'>
+          <div id="abar">
         <h3> Shifts </h3>
         <div id='day' class='fc-event' data-duration='01:00'>Day Shift</div>
         <div id='night' class='fc-event' data-duration='08:00'>Night Shift</div>
-      </div>
+      </div></div>
 
       <div id='calendar'></div>
       <div style='clear:both'></div>

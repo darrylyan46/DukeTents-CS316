@@ -230,3 +230,32 @@ h4 a:hover {
 #calendar{
     margin-right:35px;
 }
+
+#abar{
+    background:#EEEEEE; /* column 1 background colour */
+    width: 135px;
+    height: 700px;
+}
+
+
+input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  margin:0;
+  vertical-align: bottom;
+  position: relative;
+  top: -1px;
+  *overflow: hidden;
+}
+
+input[type="radio"] {
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  margin:0;
+  vertical-align: bottom;
+  position: relative;
+  top: -1px;
+  *overflow: hidden;
+}
