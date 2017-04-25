@@ -55,17 +55,40 @@ def insertAvailabilities(db, avail):
     '''Inserts Availability tuple into the database from Availability object'''
     db.session.execute("""INSERT INTO Availability VALUES(:mid, :start_time, :end_time, :bool)""",
                         dict(mid=avail.member_id, start_time=avail.start_time, end_time=avail.end_time, bool=avail.shift))
-    return
+    return None
 
-#def insertNewUser(email, name, permissions, tentid, color=None):
-    #return
-    #'''
-    #if permissions:
-    #    try:
-    #        db.session.execute('''INSERT INTO Member
-    #                        (email, name, hours_logged, games_attended, permissions)
-    #                        VALUE (:email, :name, 0, 0, :permissions)''',
-    #                        dict(email=email, name=name, permissions=permissions))
-    #        db.session.execute('''INSERT INTO Tent''')
-    #        return
-    #'''
+def insertNewUser(db, email, name, permissions, tentid, color, tent_name):
+    if permissions:
+        try:
+            member_id = db.session.execute('''INSERT INTO Member
+                                (email, name, hours_logged, games_attended, permissions)
+                                VALUE (:email, :name, 0, 0, :permissions) RETURNING id''',
+                                dict(email=email, name=name, permissions=permissions))
+            tid = db.session.execute('''INSERT INTO Tent
+                            (name, color)
+                            VALUE (:tent_name, :color) RETURNING id''',
+                            dict(tent_name=tent_name, color=color))
+            db.session.execute('''INSERT INTO Member_In_Tent
+                                (tent_id, member_id)
+                                VALUE (:mid, :tid)''',
+                                dict(mid=member_id, tid=tid))
+            db.session.commit()
+            return None
+        except Exception as e:
+            db.session.rollback()
+            raise e
+    else:
+        try:
+            member_id = db.session.execute('''INSERT INTO Member
+                                (email, name, hours_logged, games_attended, permissions)
+                                VALUE (:email, :name, 0, 0, :permissions) RETURNING id''',
+                                dict(email=email, name=name, permissions=permissions))
+            db.session.execute('''INSERT INTO Member_In_Tent
+                                (tent_id, member_id)
+                                VALUE (:mid, :tid)''',
+                                dict(mid=member_id, tid=tentid))
+            db.session.commit()
+            return None
+        except Exception as e:
+            db.session.rollback()
+            raise e
