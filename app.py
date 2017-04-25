@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from icsParse import readFile
 import models
 import forms
+import os
 import queries
 
 import httplib2
@@ -18,6 +19,19 @@ app = Flask(__name__)
 app.secret_key = 's3cr3t'
 app.config.from_object('config')
 db = SQLAlchemy(app, session_options={'autocommit': False})
+
+@app.context_processor
+def override_url_for():
+    return dict(url_for=dated_url_for)
+
+def dated_url_for(endpoint, **values):
+    if endpoint == 'static':
+        filename = values.get('filename', None)
+        if filename:
+            file_path = os.path.join(app.root_path,
+                                     endpoint, filename)
+            values['q'] = int(os.stat(file_path).st_mtime)
+    return url_for(endpoint, **values)
 
 @app.route('/')
 def index():
@@ -82,9 +96,10 @@ def login():
         return render_template('login.html')
     else:
         #iffy..what goes here?
-        tentid = queries.getTentFromUsername(db,str(request.form['username']))
-        tenters = queries.getTentMembers(db, tentid)
-        return render_template('tentProfile.html', tent=tentid, tenters=tenters)
+        return render_template(url_for('all_tents'))
+        # tentid = queries.getTentFromUsername(db,str(request.form['username']))
+        # tenters = queries.getTentMembers(db, tentid)
+        # return render_template('tentProfile.html', tent=tentid, tenters=tenters)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
