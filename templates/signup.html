@@ -1,11 +1,11 @@
 {% extends 'layout.html' %}
-{% block heading %} Sign Up {% endblock %}
 {% block content %}
 <!DOCTYPE html>
 <html>
-    <head>      <link rel="stylesheet" type="text/css" href="../static/css/test.css">
+    <head>      
+    <link rel="stylesheet" href={{ url_for('static', filename='css/test.css')}}>
 </head>
-<body><div class="login-page">
+<body><div class="signup-page">
   <div class="form">
     <form class="login-form">
 <form action="{{ url_for('signup') }}" method="post">

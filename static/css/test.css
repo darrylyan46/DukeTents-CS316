@@ -5,6 +5,14 @@
   padding: 8% 0 0;
   margin: auto;
 }
+.signup-page {
+  width: 400px;
+  padding: 8% 0 0;
+    margin-top: -75px;
+    margin-right: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+}
 .form {
   position: relative;
   z-index: 1;
@@ -158,9 +166,11 @@ font-family: Arial, sans-serif;
  font-size: 44px;
  line-height: 44px;
  letter-spacing: -2px;
+text-transform: capitalize;
  font-weight: bold;
  text-align: center;
 }
+
 h2 {
     color: #ffffff;
     font-family: 'Open Sans', sans-serif;
@@ -180,6 +190,24 @@ h3 {
     text-align: center;
 }
 
+h4 {
+    color: #fff;
+    font-family: "Lucida Sans Unicode";
+    font-size: 20px;
+    line-height: 20px;
+    margin: 20 0 10px;
+    text-align: center;
+}
+
+h4 a:link {
+    color: #7ab0e6;
+}
+
+h4 a:hover {
+    color: #fff;
+}
+
+
 #container1 {
 	float:left;
 	width:75%;
@@ -192,4 +220,13 @@ h3 {
     margin: 0px 100px 0px 175px;
     background:#ffffff; /* column 1 background colour */
 	overflow:hidden;
+}
+
+.boxed {
+    width: 200px;
+    margin:0 auto;
+}
+
+#calendar{
+    margin-right:35px;
 }
