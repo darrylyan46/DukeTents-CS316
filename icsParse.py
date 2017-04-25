@@ -22,6 +22,10 @@ def readFile(data):
         start = event.decoded('dtstart').replace(tzinfo=None) - timedelta(minutes=25)
         end = event.decoded('dtend').replace(tzinfo=None) + timedelta(minutes=25)
 
+        #Limit event data that enters the database
+        if start < datetime(2017, 1, 11) or start > datetime(2017, 2, 3):
+            break
+
         startTime = str(start).replace(" ", "T")
         endTime = str(start).replace(" ", "T")
         time = (startTime, endTime)

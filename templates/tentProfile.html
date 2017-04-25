@@ -20,6 +20,16 @@
         <h1> {{ tent.name }} Tent's Profile</h1>
     <div><br>
         <div class="boxed">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissable" role="alert">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+            <strong>Success!</strong>   {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
     <center><h4>
         Tent members:
         {% for member in tenters %}
@@ -43,7 +53,7 @@
       <div style='clear:both'></div>
 
       </div> </div>
-      <button id="submit" type="submit" class="btn btn-primary"></button>
+      <!--<button id="submit" type="submit" class="btn btn-primary"></button>-->
       <br><br><br><br><br>
 </body>
 <script>
@@ -82,7 +92,7 @@
 
       $("#submit").click(function() {
         $.ajax({
-          url: window.location.href,
+          url: $("location").href,
           type: "POST",
           contentType: "application/json",
           data: JSON.stringify({
@@ -99,6 +109,7 @@
     $('#calendar').fullCalendar({
         // put your options and callbacks here
         now: '2017-01-15',
+        aspectRatio: 1.8,
         editable: true,
         droppable: true,
         schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
@@ -122,20 +133,15 @@
             success: function(doc) {
               var events = [];
               var color = "red";
-              var title = $(this).attr('name') + ' Unable to Attend Shift';
-              if ($(this).attr('shift')) {
-                color = "blue";
-                title = $(this).attr('name') + ' Has Shift';
-              }
               $.each(doc, function(key, value) {
                 events.push({
-                  title: $(this).attr('name') + ' Unable to Attend Shift',
-                  resourceId: String.fromCharCode($(this).attr('member_id') + 97),
-                  start: $(this).attr('start_time'),
-                  end: $(this).attr('end_time'),
-                  allDay: false,
-                  editable: false,
-                  backgroundColor: color
+                    title: $(this).attr('name') + ' Unable to Attend Shift',
+                    resourceId: String.fromCharCode($(this).attr('member_id') + 97),
+                    start: $(this).attr('start_time'),
+                    end: $(this).attr('end_time'),
+                    allDay: false,
+                    editable: false,
+                    backgroundColor: color
                 });
               });
               callback(events);
@@ -147,6 +153,7 @@
         },
         eventReceive: function(event) { // called when a proper external event is dropped
           console.log('eventReceive', event);
+          console.log('memberId', event.resourceId.charCodeAt(0) - 97);
           delete event.source;
           addedEvents.push(event);
           console.log(addedEvents);
@@ -155,7 +162,6 @@
           console.log('eventDrop', event);
         }
     });
-    $('#calendar').fullCalendar('refetchEvents');
   });
 </script>
 </html>

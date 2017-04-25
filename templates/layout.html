@@ -19,6 +19,9 @@
           <ul class="nav navbar-nav">
             <li><a href="http://www.kvillenation.com" target="_blank">Kville Nation</a></li>
           </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href={{ url_for('logout') }}>Logout</a></li>
+          </ul>
       </div>
   </nav>
     <h2 id="heading">{% block heading %}{% endblock %}</h2>

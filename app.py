@@ -38,8 +38,7 @@ def dated_url_for(endpoint, **values):
 
 @app.route('/')
 def index():
-    #some way to say not logged in: try to use session info
-    if not session.get('username'):
+    if not session.has_key('username'):
         return redirect(url_for('login'))
     tid = queries.getIdFromEmail(db, session['username']).tent_id
     return redirect(url_for('tentProfile', tentid=tid))
@@ -49,6 +48,10 @@ def all_tents():
     tents = queries.getAllTents(db)
     return render_template('all-tents.html', tents=tents)
 
+@app.route('/logout')
+def logout():
+    session.pop('username')
+    return redirect(url_for('index'))
 
 @app.route('/googleauth')
 def googleauth():
@@ -107,12 +110,13 @@ def gcalauth():
           for event in events['items']:
               start = str(event['start']['dateTime'])
               end = str(event['end']['dateTime'])
-              try:
-                  db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)'''
+              if not queries.checkAvailability(db, uid, start, end):
+                  try:
+                      db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)'''
                                                     , dict(mid=uid, startTime=start, endTime=end, bool=False))
-              except Exception as e:
-                  db.session.rollback()
-                  raise e
+                  except Exception as e:
+                    db.session.rollback()
+                    raise e
           db.session.commit()
           return redirect(url_for('userProfile', userid=uid))
       except HttpAccessTokenRefreshError:
@@ -177,18 +181,18 @@ def tentProfile(tentid):
     if request.method == "POST":
         events = request.json["addEvents"]
         for event in events:
-            uid = session['uid']
+            uid = ord(event["resourceId"]) - 97
             start = event["start"]
             end_time = event["end"]
             if not queries.checkAvailability(db, uid, start, end_time):
                 try:
-                    db.session.execute('''INSERT INTO Availability
-                                    VALUES (:mid, :start_time, :end_time, :bool)''',
+                    db.session.execute('''INSERT INTO Availability VALUES (:mid, :start_time, :end_time, :bool)''',
                                     dict(mid=uid, start_time=start, end_time=end_time, bool=True))
                 except Exception as e:
                     db.session.rollback()
                     raise e
         db.session.commit()
+        flash("Calendar data was successfully added!")
     return render_template('tentProfile.html', tent=tent, tenters=members)
 
 @app.route('/tentProfile/<int:tentid>/data')
@@ -206,7 +210,7 @@ def userProfile(userid=None):
             for startTime, endTime in timeDict[date]:
                 if not queries.checkAvailability(db, userid, startTime, endTime):
                     try:
-                        db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)'''
+                        db.session.execute("""INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)"""
                             , dict(mid=userid, startTime=startTime, endTime=endTime, bool=False))
                     except Exception as e:
                         db.session.rollback()
