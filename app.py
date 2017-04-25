@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from icsParse import readFile
+import os
 import models
 import forms
 import os
@@ -95,11 +96,11 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
     else:
-        #iffy..what goes here?
-        return render_template(url_for('all_tents'))
+        return redirect(url_for('all_tents'))
         # tentid = queries.getTentFromUsername(db,str(request.form['username']))
         # tenters = queries.getTentMembers(db, tentid)
         # return render_template('tentProfile.html', tent=tentid, tenters=tenters)
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -142,8 +143,8 @@ def userProfile(userid=None):
         for date in timeDict:
             for startTime, endTime in timeDict[date]:
                 try:
-                    db.session.execute('INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)',
-                                        dict(mid=userid, startTime=startTime, endTime=endTime, bool=False))
+                    db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)'''
+                                        , dict(mid=userid, startTime=startTime, endTime=endTime, bool=False))
                     db.session.commit()
                 except Exception as e:
                     db.session.rollback()
@@ -155,10 +156,6 @@ def userProfile(userid=None):
 def memberData(userid):
     data = queries.getAllMemberAvailabilities(db, userid)
     return jsonify([dict(d) for d in data])
-
-@app.route('/userProfile/<int:userid>/enterSchedule')
-def enterSchedule(userid):
-    return
 
 @app.template_filter('pluralize')
 def pluralize(number, singular='', plural='s'):

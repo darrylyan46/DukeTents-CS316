@@ -22,7 +22,7 @@
       {% for message in messages %}
       <div class="alert alert-success alert-dismissable" role="alert">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-        <strong>Success!</strong>{{ message }}
+        <strong>Success!</strong>   {{ message }}
       </div>
       {% endfor %}
     {% endif %}
@@ -30,7 +30,7 @@
     <h2> Hours logged: {{ user.hours_Logged | string }} | Games attended: {{ user.games_Attended | string }}<br><br>
     <b>Upload your availability:</b></h2>
             </div>
-    
+
     <center><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#import">Import Calendar</button></center><br> <br>
     <!-- Modals -->
     <div class="modal fade" id="import" role="dialog">
@@ -116,8 +116,8 @@ function go_to_iCalendar() {
               $.each(doc, function(key, value) {
                 events.push({
                   title: $(this).attr('name') + ' Unable to Attend Shift',
-                  start: $(this).attr('starttime'),
-                  end: $(this).attr('endtime'),
+                  start: $(this).attr('start_time'),
+                  end: $(this).attr('end_time'),
                   allDay: false,
                   editable: false,
                   backgroundColor: 'red'

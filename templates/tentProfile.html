@@ -7,12 +7,98 @@
     <meta charset="UTF-8">
     <title>Your Tent Profile | Tents @ Duke</title>
     <!-- Stylesheets and JS for FullCalendar support -->
+    <link rel="stylesheet" href={{ url_for('static', filename='css/externalevents.css')}}>
     <link rel="stylesheet" href={{ url_for('static', filename='css/fullcalendar.css') }}>
     <link rel="stylesheet" href={{ url_for('static', filename='css/scheduler.css') }}>
     <link rel="stylesheet" type="text/css" href="../static/css/test.css">
     <script src={{ url_for('static', filename='js/moment.js') }}></script>
+    <script src={{ url_for('static', filename='js/jquery-ui.min.js')}}></script>
     <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
     <script src={{ url_for('static', filename='js/scheduler.js') }}></script>
+    <script>
+        $(document).ready(function() {
+
+          // Load external events
+          $('#external-events .fc-event').each(function() {
+            // store data so the calendar knows to render an event upon drop
+            $(this).data('event', {
+              title: $.trim($(this).text()), // use the element's text as the event title
+              stick: true // maintain when user navigates (see docs on the renderEvent method)
+            });
+
+            // make the event draggable using jQuery UI
+            $(this).draggable({
+              zIndex: 999,
+              revert: true,      // will cause the event to go back to its
+              revertDuration: 0  //  original position after the drag
+            });
+          });
+
+          var members = [];
+          {% for tenter in tenters %}
+          var id = String.fromCharCode({{tenter.id}} + 97);
+          var name = '{{tenter.name}}';
+          console.log(id);
+          console.log(name);
+          members.push({
+            id: id,
+            title: name
+          });
+          {% endfor %}
+
+        $('#calendar').fullCalendar({
+            // put your options and callbacks here
+            now: '2017-01-15',
+            editable: true,
+            droppable: true,
+            schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+            defaultView: 'timelineDay',
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'timelineDay, agendaWeek, timelineMonth'
+            },
+            resourceLabelText: 'Members',
+            resources: members,
+            eventOverlap: false,
+            events: function(start, end, timezone, callback){
+              $.ajax({
+                url: $(location).attr('href') + '/data',
+                dataType: 'json',
+                data: {
+                  start: start.format(),
+                  end: end.format()
+                },
+                success: function(doc) {
+                  var events = [];
+                  $.each(doc, function(key, value) {
+                    events.push({
+                      title: $(this).attr('name') + ' Unable to Attend Shift',
+                      resourceId: String.fromCharCode($(this).attr('member_id') + 97),
+                      start: $(this).attr('start_time'),
+                      end: $(this).attr('end_time'),
+                      allDay: false,
+                      editable: false,
+                      backgroundColor: 'red'
+                    });
+                  });
+                  callback(events);
+                }
+              });
+            },
+            drop: function(date, jsEvent, ui, resourceId) {
+              console.log('drop', date.format(), resourceId);
+              // is the "remove after drop" checkbox checked?
+            },
+            eventReceive: function(event) { // called when a proper external event is dropped
+              console.log('eventReceive', event);
+            },
+            eventDrop: function(event) { // called when an event (already on the calendar) is moved
+              console.log('eventDrop', event);
+            }
+        })
+        });
+    </script>
 </head>
 <body class="page">
     <div>
@@ -21,62 +107,18 @@
         {% for member in tenters %}
             <li> <a href="{{ url_for('userProfile', userid=member.id) }}"> {{ member.name }} </a> </li>
         {% endfor %}
-    </ul></center><br><br>
-        <h2>Tent shift schedule:</h2>
-    <div id='calendar' style="width:75%; margin:0 auto;"></div><br><br><br><br>
+      </ul>
+    </center> </br> </br>
+    <h2>Tent shift schedule:</h2>
+    <div id="wrap">
+      <div id='external-events'>
+        <h4> Shifts </h4>
+        <div id='day' class='fc-event' data-duration='01:00'>Day Shift</div>
+        <div id='night' class='fc-event' data-duration='08:00'>Night Shift</div>
+      </div>
+      <div id='calendar' style="width:75%; margin:0 auto;"></div>
+      <div style='clear:both'></div>
+  </div> <br><br><br><br><br>
 </body>
-<script>
-    $(document).ready(function() {
-      var members = [];
-      {% for tenter in tenters %}
-      var id = String.fromCharCode({{tenter.id}} + 97);
-      var name = '{{tenter.name}}';
-      console.log(id);
-      console.log(name);
-      members.push({
-        id: id,
-        title: name
-      });
-      {% endfor %}
-    $('#calendar').fullCalendar({
-        // put your options and callbacks here
-        now: '2017-01-15',
-        schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
-        defaultView: 'timelineDay',
-        header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'timelineDay, agendaWeek, timelineMonth'
-        },
-        resourceLabelText: 'Members',
-        resources: members,
-        events: function(start, end, timezone, callback){
-          $.ajax({
-            url: $(location).attr('href') + '/data',
-            dataType: 'json',
-            data: {
-              start: start.format(),
-              end: end.format()
-            },
-            success: function(doc) {
-              var events = [];
-              $.each(doc, function(key, value) {
-                events.push({
-                  title: $(this).attr('name') + ' Unable to Attend Shift',
-                  resourceId: String.fromCharCode($(this).attr('memberid') + 97),
-                  start: $(this).attr('starttime'),
-                  end: $(this).attr('endtime'),
-                  allDay: false,
-                  editable: false,
-                  backgroundColor: 'red'
-                });
-              });
-              callback(events);
-            }
-          });
-        }
-    })
-    });
-</script>
 </html>
 {% endblock %}

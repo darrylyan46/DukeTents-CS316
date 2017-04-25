@@ -39,9 +39,10 @@ class Tent(db.Model):
 class Member(db.Model):
     __tablename__ = 'member'
     id = db.Column('id', db.Integer, primary_key=True)
+    email = db.Column('email', db.String(30))
     name = db.Column('name', db.String(20))
-    hours_Logged = db.Column('hours_logged', db.Integer)
-    games_Attended = db.Column('games_attended', db.Integer)
+    hours_logged = db.Column('hours_logged', db.Integer)
+    games_attended = db.Column('games_attended', db.Integer)
     permissions = db.Column('permissions', db.Boolean)
     tent = orm.relationship('Member_In_Tent')
     attends = orm.relationship('Member_Attends_Games')
@@ -52,13 +53,12 @@ class Member(db.Model):
         self.hours_Logged = 0
         self.games_Attended = 0
 
-
 class Availability(db.Model):
     __tablename__ = 'availability'
-    memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
+    member_id = db.Column('member_id', db.Integer, db.ForeignKey('member.id'),
                          primary_key=True)
-    startTime = db.Column('start_time', db.String(30), primary_key=True)
-    endTime = db.Column('end_time', db.String(30), primary_key=True)
+    start_time = db.Column('start_time', db.String(30), primary_key=True)
+    end_time = db.Column('end_time', db.String(30), primary_key=True)
     shift = db.Column('shift', db.Boolean)
 
     def __init__(self, memberID, startTime, endTime, shift=False):
@@ -76,14 +76,14 @@ class AttendanceGames(db.Model):
 
 class Member_In_Tent(db.Model):
     __tablename__ = 'member_in_tent'
-    tentID = db.Column('tentid', db.Integer, db.ForeignKey('tent.id'),
+    tent_id = db.Column('tent_id', db.Integer, db.ForeignKey('tent.id'),
                        primary_key=True)
-    memberID = db.Column('memberid', db.Integer, db.ForeignKey('member.id'),
+    member_id = db.Column('member_id', db.Integer, db.ForeignKey('member.id'),
                          primary_key=True)
 
 class Member_Attends_Games(db.Model):
     __tablename__ = 'member_attends_games'
-    memberID = db.Column('memberID', db.Integer, db.ForeignKey('member.id'),
+    member_id = db.Column('member_id', db.Integer, db.ForeignKey('member.id'),
                          primary_key=True)
-    gameName = db.Column('gameName', db.String(20), db.ForeignKey('attendanceGames.name'),
+    game_name = db.Column('game_name', db.String(20), db.ForeignKey('attendanceGames.name'),
                          primary_key=True)

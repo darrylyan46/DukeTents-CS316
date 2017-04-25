@@ -13,20 +13,12 @@ class Slot:
     Object that contains time in UTC format and name of individual
     scheduled for the slot.
 
-    @:param name - Student name
     @:param time - Tent shift (in UTC)
     @:param num - Number of students required
     """
     def __init__(self, time, num):
-        self.names = []
         self.time = time
         self.num = num
-
-    def addName(self, name):
-        self.names.append(name)
-
-    def getNames(self):
-        return self.names
 
     def getTime(self):
         return self.time
@@ -61,7 +53,6 @@ def isNight(currentTime):
     """
     if currentTime.weekday() <= 2 and currentTime.time() == time(23, 0, 0):
         return True
-
     if currentTime.weekday() > 2 and currentTime.time() == time(2, 30, 0):
         return True
 
@@ -126,8 +117,7 @@ def initSchedule(beg, end, color):
                 num = 2
             else:
                 num = 1
-        else:
-            raise ValueError("Invalid color input. Please select a valid color (black, blue, white) and try again")
+
 
 
         lower = timeToStr(head)
