@@ -39,6 +39,7 @@ class Tent(db.Model):
 class Member(db.Model):
     __tablename__ = 'member'
     id = db.Column('id', db.Integer, primary_key=True)
+    email = db.Column('email', db.String(30))
     name = db.Column('name', db.String(20))
     hours_logged = db.Column('hours_logged', db.Integer)
     games_attended = db.Column('games_attended', db.Integer)

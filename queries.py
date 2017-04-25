@@ -17,7 +17,7 @@ def getTent(db, tid):
     '''Returns Tent tuple with id = tid'''
     return db.session.query(models.Tent).filter(models.Tent.id == tid).one()
 
-def getTentFromUsername(db,uid):
+def getTentFromUsername(db, uid):
     '''Returns Tent tuple from User id = uid'''
     tents = db.session.execute("""SELECT * FROM Member_In_Tent WHERE :id = tent_id""",
                                    dict(id=uid))
@@ -56,3 +56,16 @@ def insertAvailabilities(db, avail):
     db.session.execute("""INSERT INTO Availability VALUES(:mid, :start_time, :end_time, :bool)""",
                         dict(mid=avail.member_id, start_time=avail.start_time, end_time=avail.end_time, bool=avail.shift))
     return
+
+#def insertNewUser(email, name, permissions, tentid, color=None):
+    #return
+    #'''
+    #if permissions:
+    #    try:
+    #        db.session.execute('''INSERT INTO Member
+    #                        (email, name, hours_logged, games_attended, permissions)
+    #                        VALUE (:email, :name, 0, 0, :permissions)''',
+    #                        dict(email=email, name=name, permissions=permissions))
+    #        db.session.execute('''INSERT INTO Tent''')
+    #        return
+    #'''

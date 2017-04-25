@@ -96,7 +96,7 @@ def login():
         return render_template('login.html')
     else:
         #iffy..what goes here?
-        tentid = queries.getTentFromUsername(db,str(request.form['username']))
+        tentid = queries.getTentFromUsername(db, str(request.form['username']))
         tenters = queries.getTentMembers(db, tentid)
         return render_template('tentProfile.html', tent=tentid, tenters=tenters)
 
