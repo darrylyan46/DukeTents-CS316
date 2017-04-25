@@ -7,18 +7,18 @@
 </head>
 <body><div class="login-page">
   <div class="form">
-    <form class="login-form">
-<form action="{{ url_for('signup') }}" method="post">
+<form action="{{ url_for('signup') }}" method="POST">
   <fieldset>
     <p class="title">Register</p>
-    <input type="text" placeholder="username"><br><br>
-    <input type="text" placeholder="tent ID">
-    <input type="checkbox" onclick="isCaptainForm()" id="captain" name="captain" value="Captain"/>
-      <label for="captain">Captain?</label>
+    <label for="name">Your name</label>
+    <input id="name" type="text" name="name" placeholder="Your name"><br><br>
+    <label id="id_label" for="tid">Tent ID (if joining a tent)</label>
+    <input id="tid" name="tentid" type="text" placeholder="Tent ID">
+    <input type="checkbox" onclick="isCaptainForm()" id="captain" name="captain"/><label for="captain">Captain?</label>
 
       <br>
 
-      
+
       <div id="ifCaptain" style="display:none"> <br>
           What color is your tent? <br>
           <input type="radio" name="color" value="Black"> Black <br>
@@ -29,15 +29,19 @@
       </div>
     <input type="submit" value="Submit">
   </fieldset>
-        </form></form></div></div>
+</form></div></div>
 </body>
-<script type="text/javascript">
+<script>
     function isCaptainForm() {
         if (document.getElementById("captain").checked) {
             document.getElementById("ifCaptain").style.display = 'block';
+            document.getElementById("tid").style.display = 'none';
+            document.getElementById("id_label").style.display = 'none';
         }
         else {
             document.getElementById("ifCaptain").style.display = 'none';
+            document.getElementById("tid").style.display = 'block';
+            document.getElementById("id_label").style.display = 'block';
         }
     }
 </script>

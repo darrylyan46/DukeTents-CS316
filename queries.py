@@ -22,6 +22,11 @@ def getTentFromUsername(db, uid):
     tents = db.session.execute("""SELECT * FROM Member_In_Tent WHERE :id = tent_id""",
                                    dict(id=uid))
     return [tent for tent in tents][0]
+def getIdFromEmail(db, email):
+    '''Returns integer Tent.id from email'''
+    uid_result = db.session.execute('''SELECT t.id FROM Member m, Member_In_Tent t
+                                    WHERE m.email = :email AND m.id = t.member_id''')
+    return uid_result[0]
 
 def getMember(db, uid):
     '''Returns Member tuple with id = uid'''
@@ -73,7 +78,7 @@ def insertNewUser(db, email, name, permissions, tentid, color, tent_name):
                                 VALUE (:mid, :tid)''',
                                 dict(mid=member_id, tid=tid))
             db.session.commit()
-            return None
+            return member_id
         except Exception as e:
             db.session.rollback()
             raise e
@@ -88,7 +93,7 @@ def insertNewUser(db, email, name, permissions, tentid, color, tent_name):
                                 VALUE (:mid, :tid)''',
                                 dict(mid=member_id, tid=tentid))
             db.session.commit()
-            return None
+            return member_id
         except Exception as e:
             db.session.rollback()
             raise e

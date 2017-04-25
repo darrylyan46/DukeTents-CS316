@@ -62,10 +62,11 @@ def googleauth():
           inventory = info.people().get(resourceName='people/me')
           resp = inventory.execute()
           email = resp['emailAddresses'][0]['value']
-          #TODO
-          #if this email doesn't exist in the database,
-            # insert to create a new member
           session['username'] = email
+          if not db.session.query(db.exists().where(models.Member.email == email)).scalar():
+              return redirect(url_for('signup'))
+          else:
+              return redirect(url_for('tentProfile', queries.getIdFromEmail(db, email)))
           #tentid = queries.getTentFromUsername(db, email)
           #test case, Anna -- for some reason, test case does not work.
           # tentid = queries.getTentFromUsername(db,0)
@@ -105,21 +106,14 @@ def signup():
     if request.method == 'GET':
         return render_template('signup.html')
     elif request.method == 'POST':
-        name = request.form['username']
-        # Check if username is in database already
+        email = session['username']
+        name = request.form['name']
         tent_id = request.form['tentid']
-        isCaptain = request.form['captain']
-        permissions = False
-        if isCaptain == "Captain":
-            tentname = request.form['tentName']
-            color = request.form['color']
-            newTent = models.Tent(tentname, color)
-            db.session.add(newTent)
-            permissions = True
-        newUser = models.Member(name, permissions)
-        db.session.add(newUser)
-        db.session.commit()
-        return render_template(url_for('userProfile', user=newUser.id))
+        permissions = request.form.get('captain')
+        tentname = request.form['tentName']
+        color = request.form['color']
+        #uid = queries.insertNewUser(db, email, name, permissions, tent_id, color, tentname)
+        #return url_for('userProfile', user=queries.getMember(db, uid))
 
 @app.route('/tentProfile/<int:tentid>')
 def tentProfile(tentid, methods=['GET', 'POST']):
