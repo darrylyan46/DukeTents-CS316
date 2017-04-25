@@ -7,13 +7,12 @@
     <title>Title</title>
     <!-- Stylesheets and JS for FullCalendar support -->
     <link rel="stylesheet" href={{ url_for('static', filename='css/fullcalendar.css') }}>
-    <!--<link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }}>-->
     <link rel="stylesheet" href={{ url_for('static', filename='css/test.css')}}>
-    <script src="{{ url_for('static', filename='js/gcal.js') }}"></script>
+    <script src={{ url_for('static', filename='js/gcal.js') }}></script>
     <script src={{ url_for('static', filename='js/moment.js') }}></script>
     <script src={{ url_for('static', filename='js/fullcalendar.js') }}></script>
 </head>
-<body class="page">
+<body class="page animated fadeIn">
     <div id="header">
 
     <h1> Welcome {{ user.name }}!</h1>
@@ -28,7 +27,7 @@
       {% endfor %}
     {% endif %}
     {% endwith %}
-    <h2> Hours logged: {{ user.hours_Logged | string }} | Games attended: {{ user.games_Attended | string }}<br><br>
+    <h2> Hours logged: {{ user.hours_logged | string }} | Games attended: {{ user.games_attended | string }}<br><br>
     <b>Upload your availability:</b></h2>
             </div>
 
@@ -44,7 +43,7 @@
             <div class="row">
               <div class="col-xs-6">
                 <h5><center>Google Calendar</center></h5>
-                <img src="https://lh3.ggpht.com/oGR9I1X9No3SfFEXrq655tETtVVzI3jIphhmEVPGPEVuM5gfwh8lOGWHQFf6gjSTvw=w300" class="img-rounded">
+                <img src="https://lh3.ggpht.com/oGR9I1X9No3SfFEXrq655tETtVVzI3jIphhmEVPGPEVuM5gfwh8lOGWHQFf6gjSTvw=w300"class="img-rounded" onclick="go_to_gcal()">
               </div>
               <div class="col-xs-6">
                 <h5><center>iCalendar File</center></h5>
@@ -58,7 +57,6 @@
         </div>
       </div>
     </div>
-
     <div class="modal fade" id="iCalendar" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -81,7 +79,7 @@
 <div id="container1">
     <div id="col1">
     <div id='calendar'></div>
-   
+
     </div></div>
 <br><br><br>
 
@@ -91,10 +89,12 @@
 function go_to_iCalendar() {
   $("#import").modal('hide');
   $("#iCalendar").modal('show');
-}
+};
+function go_to_gcal() {
+  var getUrl = window.location;
+  window.location.href = getUrl.protocol + "//" + getUrl.host + '/gcalauth';
+};
     $(document).ready(function() {
-        //var pg = require('pg')
-        //var conString = 'postgresql://vagrant:dbpasswd@localhost/tents';
 
     // page is now ready, initialize the calendar...
     $('#calendar').fullCalendar({

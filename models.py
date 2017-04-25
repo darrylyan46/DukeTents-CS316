@@ -11,30 +11,6 @@ class Tent(db.Model):
     def __init__(self, name, color):
         self.name = name
         self.color = color
-    '''
-    @staticmethod
-    def edit(old_name, name, address, beers_liked, bars_frequented):
-        try:
-            db.session.execute('DELETE FROM likes WHERE drinker = :name',
-                               dict(name=old_name))
-            db.session.execute('DELETE FROM frequents WHERE drinker = :name',
-                               dict(name=old_name))
-            db.session.execute('UPDATE drinker SET name = :name, address = :address'
-                               ' WHERE name = :old_name',
-                               dict(old_name=old_name, name=name, address=address))
-            for beer in beers_liked:
-                db.session.execute('INSERT INTO likes VALUES(:drinker, :beer)',
-                                   dict(drinker=name, beer=beer))
-            for bar, times_a_week in bars_frequented:
-                db.session.execute('INSERT INTO frequents'
-                                   ' VALUES(:drinker, :bar, :times_a_week)',
-                                   dict(drinker=name, bar=bar,
-                                        times_a_week=times_a_week))
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            raise e
-    '''
 
 class Member(db.Model):
     __tablename__ = 'member'

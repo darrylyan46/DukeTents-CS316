@@ -70,13 +70,8 @@ def googleauth():
               return redirect(url_for('signup'))
           else:
               tid = queries.getIdFromEmail(db, email).tent_id
+              session['uid'] = queries.getMemberFromEmail(db, email).id
               return redirect(url_for('tentProfile', tentid=tid))
-          #tentid = queries.getTentFromUsername(db, email)
-          #test case, Anna -- for some reason, test case does not work.
-          # tentid = queries.getTentFromUsername(db,0)
-          # tenters = queries.getTentMembers(db, tentid)
-          # return render_template('tentProfile.html',tent=tentid,tenters=tenters)
-          return redirect(url_for('all_tents'))
       except HttpAccessTokenRefreshError:
           return redirect(url_for('oauth2callback'))
 
@@ -107,16 +102,26 @@ def gcalauth():
           http_auth = credentials.authorize(httplib2.Http())
           service = discovery.build('calendar', 'v3', http_auth)
           page_token = None
-          calendars = (service.calendarList().list(pageToken = page_token).execute())
-          calendarIdList = [calendar.get('id',None) for calendar in calendars['items']]
-          #TODO change this to be uesrProfile with parameter calendarIDList.
-          #TODO also pass in gcal_API_key
-          return render_template(url_for('all_tents'))
+          events = service.events().list(calendarId='primary', pageToken=page_token).execute()
+          uid = session['uid']
+          user = queries.getMember(db, uid)
+          for event in events['items']:
+              start = str(event['start']['dateTime'])
+              end = str(event['end']['dateTime'])
+              try:
+                  if not queries.checkAvailability(db, uid, start, end):
+                      db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)'''
+                                  , dict(mid=uid, startTime=start, endTime=end, bool=False))
+              except Exception as e:
+                  db.session.rollback()
+                  raise e
+          db.session.commit()
+          return redirect(url_for('userProfile', userid=uid))
       except HttpAccessTokenRefreshError:
           return redirect(url_for('cal_callback'))
 
 @app.route('/cal_callback')
-def call_callback():
+def cal_callback():
   flow = client.flow_from_clientsecrets(
       'client_secrets.json',
       scope='https://www.googleapis.com/auth/calendar',
@@ -131,15 +136,22 @@ def call_callback():
     return redirect(url_for('gcalauth'))
 
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/login', methods=["GET", "POST"])
 def login():
-    if request.method == 'GET':
-        return render_template('login.html')
+    if request.method == "GET":
+        if 'username' not in session:
+            return render_template('login.html')
+        else:
+            tid = queries.getIdFromEmail(db, session['username']).tent_id
+            return redirect(url_for('tentProfile', tentid=tid))
     else:
-        return redirect(url_for('all_tents'))
-        # tentid = queries.getTentFromUsername(db,str(request.form['username']))
-        # tenters = queries.getTentMembers(db, tentid)
-        # return render_template('tentProfile.html', tent=tentid, tenters=tenters)
+        uid = request.form['username']
+        if queries.memberExists(db, uid):
+            tent = queries.getTentFromUsername(db, uid)
+            return redirect(url_for('tentProfile', tentid=tent.tent_id))
+        else:
+            flash("Please try again.")
+            return render_template('login.html')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -150,17 +162,35 @@ def signup():
         email = session['username']
         name = request.form['name']
         tent_id = request.form['tentid']
-        permissions = request.form.get('captain')
+        if request.form.get('captain') == "y":
+            permissions = True
+        else:
+            permissions = False
         tentname = request.form['tentName']
         color = request.form['color']
         uid = queries.insertNewUser(db, email, name, permissions, tent_id, color, tentname)
-        tid = tentid=queries.getTentFromUsername(db, uid).tent_id
+        tid = queries.getTentFromUsername(db, uid).tent_id
         return redirect(url_for('tentProfile', tentid=tid))
 
 @app.route('/tentProfile/<int:tentid>', methods=['GET', 'POST'])
 def tentProfile(tentid):
     tent = queries.getTent(db, tentid)
     members = queries.getTentMembers(db, tentid)
+    if request.method == "POST":
+        events = request.json["addEvents"]
+        for event in events:
+            uid = session['uid']
+            start = event["start"]
+            end_time = event["end"]
+            try:
+                if not queries.checkAvailability(db, uid, start, end_time):
+                    db.session.execute('''INSERT INTO Availability
+                                        VALUES (:mid, :start_time, :end_time, :bool)''',
+                                        dict(mid=uid, start_time=start, end_time=end_time, bool=True))
+            except Exception as e:
+                db.session.rollback()
+                raise e
+        db.session.commit()
     return render_template('tentProfile.html', tent=tent, tenters=members)
 
 @app.route('/tentProfile/<int:tentid>/data')
@@ -168,23 +198,22 @@ def tentData(tentid):
     data = queries.getTentAvailabilities(db, tentid)
     return jsonify([dict(d) for d in data])
 
-@app.route('/userProfile/<int:userid>', methods=['GET', 'POST', 'PUT'])
+@app.route('/userProfile/<int:userid>', methods=['GET', 'POST'])
 def userProfile(userid=None):
     user = queries.getMember(db, userid)
-    if request.method == 'PUT':
-        return redirect(url_for('gcalauth'))
-    elif request.method == 'POST':
+    if request.method == 'POST':
         f = request.files['sched']
         timeDict = readFile(f.read())
         for date in timeDict:
             for startTime, endTime in timeDict[date]:
                 try:
-                    db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)'''
-                                        , dict(mid=userid, startTime=startTime, endTime=endTime, bool=False))
-                    db.session.commit()
+                    if not queries.checkAvailability(db, userid, startTime, endTime):
+                        db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)'''
+                            , dict(mid=userid, startTime=startTime, endTime=endTime, bool=False))
                 except Exception as e:
                     db.session.rollback()
                     raise e
+        db.session.commit()
         flash('Calendar data was successfully uploaded!')
     return render_template('userProfile.html', user=user)
 
@@ -193,9 +222,6 @@ def memberData(userid):
     data = queries.getAllMemberAvailabilities(db, userid)
     return jsonify([dict(d) for d in data])
 
-@app.template_filter('pluralize')
-def pluralize(number, singular='', plural='s'):
-    return singular if number in (0, 1) else plural
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

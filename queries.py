@@ -29,6 +29,21 @@ def getIdFromEmail(db, email):
                                     dict(email=email)).fetchone()
     return uid_result
 
+def getMemberFromEmail(db, email):
+    '''Returns tuple of matching Member from email attribute'''
+    return db.session.query(models.Member).filter(models.Member.email == email).one()
+
+def checkAvailability(db, mid, startTime, endTime):
+    ''' Returns boolean value indicating whether Availability with parameters exist'''
+    true_val = db.session.query(db.exists().where(models.Availability.member_id == mid \
+                and models.Availability.start_time == startTime \
+                and models.Availability.end_time == endTime)).scalar()
+    return true_val
+
+def memberExists(db, mid):
+    ''' Returns boolean value indicating whether a member with id = :mid exists'''
+    return db.session.query(db.exists().where(models.Member.id == uid)).scalar()
+
 def getMember(db, uid):
     '''Returns Member tuple with id = uid'''
     return db.session.query(models.Member).filter(models.Member.id == uid).one()

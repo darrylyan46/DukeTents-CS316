@@ -7,7 +7,17 @@
     <link rel="stylesheet" href={{ url_for('static', filename='css/test.css')}}>
         <title>Login Page</title>
     </head>
-    <body>
+    <body class="animated fadeIn">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger alert-dismissable" role="alert">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+          <strong>Invalid username.</strong>   {{ message }}
+        </div>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
     <div>
         <div class="login-page">
             <div class="form">
