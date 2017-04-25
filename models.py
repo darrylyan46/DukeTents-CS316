@@ -34,7 +34,7 @@ class Tent(db.Model):
         except Exception as e:
             db.session.rollback()
             raise e
-    '''
+    ''''''
 
 class Member(db.Model):
     __tablename__ = 'member'
@@ -51,6 +51,18 @@ class Member(db.Model):
         self.permissions = permissions
         self.hours_Logged = 0
         self.games_Attended = 0
+
+    @staticmethod
+    def insert(name, permissions, tentid):
+        try:
+            db.session.execute('''INSERT INTO Member
+                                (NAME, HOURS_LOGGED, GAMES_ATTENDED, PERMISSIONS)
+                                VALUES (:name, 0, 0, :permissions)''',
+                                dict(name=name, permissions=permissions))
+            db.session.commit()
+            db.session.execute('''INSERT INTO Member_In_Tent
+                                (tent_id, member_id)
+                                VALUES (:tent_id, )''', dict(
 
 
 class Availability(db.Model):

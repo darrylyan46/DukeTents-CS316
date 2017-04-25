@@ -1,25 +1,26 @@
 -- Create tables specified in E/R diagram
 CREATE TABLE Tent
-(id INTEGER PRIMARY KEY NOT NULL,
+(id SERIAL PRIMARY KEY NOT NULL,
  name VARCHAR(30) NOT NULL,
  color varchar(5) NOT NULL);
 
 -- Use NULLS approach for ISA relationship
 
 CREATE TABLE Member
-(id INTEGER PRIMARY KEY NOT NULL,
+(id SERIAL PRIMARY KEY NOT NULL,
+ email VARCHAR(30) NOT NULL,
  name VARCHAR(30) NOT NULL,
  hours_logged REAL NOT NULL,
  games_attended INTEGER NOT NULL,
  permissions BOOLEAN);
 
 CREATE TABLE Member_In_Tent
-(tent_id INTEGER NOT NULL REFERENCES Tent(id),
- member_id INTEGER NOT NULL REFERENCES Member(id),
+(tent_id SERIAL NOT NULL REFERENCES Tent(id),
+ member_id SERIAL NOT NULL REFERENCES Member(id),
  PRIMARY KEY (tent_id, member_id));
 
 CREATE TABLE Availability
-(member_id INTEGER NOT NULL REFERENCES Member(id),
+(member_id SERIAL NOT NULL REFERENCES Member(id),
  start_time VARCHAR(30) NOT NULL,
  end_time VARCHAR(30) NOT NULL,
  shift BOOLEAN,
@@ -31,7 +32,7 @@ CREATE TABLE AttendanceGames
  time VARCHAR(30) NOT NULL);
 
 CREATE TABLE Member_Attends_Games
-(member_id INTEGER NOT NULL REFERENCES Member(id),
+(member_id SERIAL NOT NULL REFERENCES Member(id),
 game_name VARCHAR(30) NOT NULL REFERENCES AttendanceGames(name),
 PRIMARY KEY (member_id, game_name));
 
@@ -99,42 +100,41 @@ CREATE TRIGGER TG_update_gamesAttended
  EXECUTE PROCEDURE TF_update_gamesAttended_ref();
 
 
-
 -- Begin production dataset
-INSERT INTO Tent VALUES (0, 'apple', 'black');
-INSERT INTO Tent VALUES (1, 'banana', 'blue');
-INSERT INTO Tent VALUES (2, 'carrot', 'white');
-INSERT INTO Tent VALUES (3, 'date', 'black');
-INSERT INTO Tent VALUES (4, 'eggplant', 'blue');
-INSERT INTO Tent VALUES (5, 'fig', 'white');
+INSERT INTO Tent (name, color) VALUES ('apple', 'black');
+INSERT INTO Tent (name, color) VALUES ('banana', 'blue');
+INSERT INTO Tent (name, color) VALUES ('carrot', 'white');
+INSERT INTO Tent (name, color) VALUES ('date', 'black');
+INSERT INTO Tent (name, color) VALUES ('eggplant', 'blue');
+INSERT INTO Tent (name, color) VALUES ('fig', 'white');
 
-INSERT INTO Member VALUES (0, 'Anna', 3, 2, 't');
-INSERT INTO Member VALUES (1, 'Brad', 0, 1, 'f');
-INSERT INTO Member VALUES (2, 'Carl', 9, 3, 'f');
-INSERT INTO Member VALUES (3, 'Diana', 4, 1, 't');
-INSERT INTO Member VALUES (4, 'Eric', 6, 6, 'f');
-INSERT INTO Member VALUES (5, 'Frank', 7, 2, 'f');
-INSERT INTO Member VALUES (6, 'George', 8, 3, 'f');
-INSERT INTO Member VALUES (7, 'Harry', 2, 3, 'f');
-INSERT INTO Member VALUES (8, 'Issac', 3, 6, 'f');
-INSERT INTO Member VALUES (9, 'James', 1, 1, 't');
-INSERT INTO Member VALUES (10, 'Kevin', 7, 2, 'f');
-INSERT INTO Member VALUES (11, 'Lucy', 10, 5, 'f');
-INSERT INTO Member VALUES (12, 'Mary', 9, 2, 'f');
-INSERT INTO Member VALUES (13, 'Nick', 7, 6, 'f');
-INSERT INTO Member VALUES (14, 'Oliver', 8, 7, 't');
-INSERT INTO Member VALUES (15, 'Percy', 3, 2, 'f');
-INSERT INTO Member VALUES (16, 'Quinn', 7, 0, 'f');
-INSERT INTO Member VALUES (17, 'Rachel', 2, 2, 'f');
-INSERT INTO Member VALUES (18, 'Steve', 1, 1, 'f');
-INSERT INTO Member VALUES (19, 'Tyler', 7, 1, 'f');
-INSERT INTO Member VALUES (20, 'Ulysses', 20, 3, 'f');
-INSERT INTO Member VALUES (21, 'Vick', 19, 5, 't');
-INSERT INTO Member VALUES (22, 'Wallace', 5, 5, 'f');
-INSERT INTO Member VALUES (23, 'Xavier', 7, 3, 'f');
-INSERT INTO Member VALUES (24, 'Yvette', 3, 0, 'f');
-INSERT INTO Member VALUES (25, 'Zoe', 15, 1, 'f');
-INSERT INTO Member VALUES (26, 'Test Delete', 0, 0, 'f');
+INSERT INTO Member (email, name, hours_logged, games_attended, permissions) VALUES ('db1@compsci.com', 'Anna', 3, 2, 't');
+INSERT INTO Member (email, name, hours_logged, games_attended, permissions) VALUES ('db2@compsci.com', 'Brad', 0, 1, 'f');
+INSERT INTO Member (email, name, hours_logged, games_attended, permissions) VALUES ('db3@compsci.com', 'Carl', 9, 3, 'f');
+INSERT INTO Member (email, name, hours_logged, games_attended, permissions) VALUES ('db4@compsci.com', 'Diana', 4, 1, 't');
+INSERT INTO Member (email, name, hours_logged, games_attended, permissions) VALUES ('db5@compsci.com', 'Eric', 6, 6, 'f');
+INSERT INTO Member (email, name, hours_logged, games_attended, permissions) VALUES ('db6@compsci.com', 'Frank', 7, 2, 'f');
+INSERT INTO Member VALUES ('George', 8, 3, 'f');
+INSERT INTO Member VALUES ('Harry', 2, 3, 'f');
+INSERT INTO Member VALUES ('Issac', 3, 6, 'f');
+INSERT INTO Member VALUES ('James', 1, 1, 't');
+INSERT INTO Member VALUES ('Kevin', 7, 2, 'f');
+INSERT INTO Member VALUES ('Lucy', 10, 5, 'f');
+INSERT INTO Member VALUES ('Mary', 9, 2, 'f');
+INSERT INTO Member VALUES ('Nick', 7, 6, 'f');
+INSERT INTO Member VALUES ('Oliver', 8, 7, 't');
+INSERT INTO Member VALUES ('Percy', 3, 2, 'f');
+INSERT INTO Member VALUES ('Quinn', 7, 0, 'f');
+INSERT INTO Member VALUES ('Rachel', 2, 2, 'f');
+INSERT INTO Member VALUES ('Steve', 1, 1, 'f');
+INSERT INTO Member VALUES ('Tyler', 7, 1, 'f');
+INSERT INTO Member VALUES ('Ulysses', 20, 3, 'f');
+INSERT INTO Member VALUES ('Vick', 19, 5, 't');
+INSERT INTO Member VALUES ('Wallace', 5, 5, 'f');
+INSERT INTO Member VALUES ('Xavier', 7, 3, 'f');
+INSERT INTO Member VALUES ('Yvette', 3, 0, 'f');
+INSERT INTO Member VALUES ('Zoe', 15, 1, 'f');
+INSERT INTO Member VALUES ('Test Delete', 0, 0, 'f');
 
 INSERT INTO Member_In_Tent VALUES (0, 0);
 INSERT INTO Member_In_Tent VALUES (0, 1);
@@ -178,7 +178,6 @@ INSERT INTO Availability VALUES (1, '2017-01-15T19:00:00', '2017-01-15T23:30:00'
 INSERT INTO Availability VALUES (1, '2017-01-17T14:00:00', '2017-01-17T22:00:00', 'f');
 INSERT INTO Availability VALUES (1, '2017-01-19T16:00:00', '2017-01-19T23:30:00', 'f');
 INSERT INTO Availability VALUES (1, '2017-01-22T09:00:00', '2017-01-22T12:00:00', 'f');
--- For example, above would be: (1, '2017-01-22T09:00:00', '2017-01-22T12:00:00', 'f');
 INSERT INTO Availability VALUES (1, '2017-01-24T20:00:00', '2017-01-24T23:59:00', 'f');
 INSERT INTO Availability VALUES (1, '2017-01-30T09:00:00', '2017-01-30T12:00:00', 'f');
 INSERT INTO Availability VALUES (1, '2017-02-07T09:00:00', '2017-02-07T19:00:00', 'f');
