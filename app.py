@@ -107,8 +107,12 @@ def gcalauth():
           for event in events['items']:
               start = str(event['start']['dateTime'])
               end = str(event['end']['dateTime'])
-              db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)'''
-                                  , dict(mid=uid, startTime=start, endTime=end, bool=False))
+              try:
+                  db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)'''
+                                                    , dict(mid=uid, startTime=start, endTime=end, bool=False))
+              except Exception as e:
+                  db.session.rollback()
+                  raise e
           db.session.commit()
           return redirect(url_for('userProfile', userid=uid))
       except HttpAccessTokenRefreshError:
@@ -176,9 +180,14 @@ def tentProfile(tentid):
             uid = session['uid']
             start = event["start"]
             end_time = event["end"]
-            db.session.execute('''INSERT INTO Availability
-                                VALUES (:mid, :start_time, :end_time, :bool)''',
-                                dict(mid=uid, start_time=start, end_time=end_time, bool=True))
+            if not queries.checkAvailability(db, uid, start, end_time):
+                try:
+                    db.session.execute('''INSERT INTO Availability
+                                    VALUES (:mid, :start_time, :end_time, :bool)''',
+                                    dict(mid=uid, start_time=start, end_time=end_time, bool=True))
+                except Exception as e:
+                    db.session.rollback()
+                    raise e
         db.session.commit()
     return render_template('tentProfile.html', tent=tent, tenters=members)
 
@@ -196,8 +205,12 @@ def userProfile(userid=None):
         for date in timeDict:
             for startTime, endTime in timeDict[date]:
                 if not queries.checkAvailability(db, userid, startTime, endTime):
+                    try:
                         db.session.execute('''INSERT INTO Availability VALUES(:mid, :startTime, :endTime, :bool)'''
                             , dict(mid=userid, startTime=startTime, endTime=endTime, bool=False))
+                    except Exception as e:
+                        db.session.rollback()
+                        raise e
         db.session.commit()
         flash('Calendar data was successfully uploaded!')
     return render_template('userProfile.html', user=user)
