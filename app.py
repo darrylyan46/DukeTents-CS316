@@ -12,6 +12,7 @@ import httplib2
 from apiclient import discovery
 from oauth2client import client
 from oauth2client.client import HttpAccessTokenRefreshError
+from collections import defaultdict
 import json
 
 
@@ -20,6 +21,7 @@ app = Flask(__name__)
 app.secret_key = 's3cr3t'
 app.config.from_object('config')
 db = SQLAlchemy(app, session_options={'autocommit': False})
+gcal_API_key = 'AIzaSyADferMigPB2Ch5Pf-Imc5Jvfz0ycZ40Vo'
 
 @app.context_processor
 def override_url_for():
@@ -92,6 +94,42 @@ def oauth2callback():
     session['credentials'] = credentials.to_json()
     return redirect(url_for('googleauth'))
 
+@app.route('/gcalauth')
+def gcalauth():
+  if 'credentials_cal' not in session:
+    return redirect(url_for('cal_callback'))
+  credentials = client.OAuth2Credentials.from_json(session['credentials_cal'])
+  if credentials.access_token_expired:
+    return redirect(url_for('cal_callback'))
+  else:
+      try:
+          http_auth = credentials.authorize(httplib2.Http())
+          service = discovery.build('calendar', 'v3', http_auth)
+          page_token = None
+          calendars = (service.calendarList().list(pageToken = page_token).execute())
+          calendarIdList = [calendar.get('id',None) for calendar in calendars['items']]
+          #TODO change this to be uesrProfile with parameter calendarIDList.
+          #TODO also pass in gcal_API_key
+          return render_template(url_for('all_tents'))
+      except HttpAccessTokenRefreshError:
+          return redirect(url_for('cal_callback'))
+
+@app.route('/cal_callback')
+def call_callback():
+  flow = client.flow_from_clientsecrets(
+      'client_secrets.json',
+      scope='https://www.googleapis.com/auth/calendar',
+      redirect_uri=url_for('cal_callback', _external=True))
+  if 'code' not in request.args:
+    auth_uri = flow.step1_get_authorize_url()
+    return redirect(auth_uri)
+  else:
+    auth_code = request.args.get('code')
+    credentials = flow.step2_exchange(auth_code)
+    session['credentials_cal'] = credentials.to_json()
+    return redirect(url_for('gcalauth'))
+
+
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'GET':
@@ -128,10 +166,12 @@ def tentData(tentid):
     data = queries.getTentAvailabilities(db, tentid)
     return jsonify([dict(d) for d in data])
 
-@app.route('/userProfile/<int:userid>', methods=['GET', 'POST'])
+@app.route('/userProfile/<int:userid>', methods=['GET', 'POST', 'PUT'])
 def userProfile(userid=None):
     user = queries.getMember(db, userid)
-    if request.method == 'POST':
+    if request.method == 'PUT':
+        return redirect(url_for('gcalauth'))
+    elif request.method == 'POST':
         f = request.files['sched']
         timeDict = readFile(f.read())
         for date in timeDict:
