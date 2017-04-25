@@ -1,32 +1,45 @@
 {% extends 'layout.html' %}
-{% block heading %} Log in {% endblock %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="../static/css/test.css">
-    <title>Login Page</title>
-</head>
-<body>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+    <link rel="stylesheet" href={{ url_for('static', filename='css/test.css')}}>
+        <title>Login Page</title>
+    </head>
+    <body>
     <div>
         <div class="login-page">
-          <div class="form">
-            <form class="login-form">
+            <div class="form">
+                <fieldset class="login-form">
 
-                <form method="POST">
-                    <p class="title">Tents @ Duke</p>
-                    <input type="text" placeholder="username"><br>
-                    <button type="button">login with username</button>
-                    <br><br><br><br>
-                    <button type="button" class="btn btn-info btn-lg" onclick="location.href='{{ url_for('googleauth') }}';">Or login with Google</button> <br>
-                    <p class="message">Not registered? <a href={{ url_for('signup') }}>Create an account</a></p>
-
-                </form></form>
-            </div></div>
+                    <form method="POST" action={{ url_for('login') }}>
+                        <p class="title">Tents @ Duke</p>
+                        <input type="text" name="username" id="TextBoxId" placeholder="Username"><br>
+                        {#                    <a class="btn btn-info" id="option" role="button" href={{ url_for('googleauth') }}  >Link Button</a>#}
+                        {#                    <button type="button" class="btn btn-info btn-lg" id="stdlogin" onclick="location.href='{{ url_for('googleauth') }}';">login with username</button>#}
+                        <input type="submit" id="option" value="Login">
+                        <br><br><br><br>
+                    </form>
+                    <button type="button" class="btn btn-info btn-lg"
+                                onclick="location.href='{{ url_for('googleauth') }}';">Or login with Google
+                        </button>
+                        <br>
+                        <p class="message">Not registered? <a href={{ url_for('signup') }}>Create an account</a></p>
+                </fieldset>
+            </div>
         </div>
+    </div>
     </body>
-
+{##}
+{#    <script>#}
+{#        $(document).ready(function () {#}
+{#            $('#TextBoxId').keypress(function (e) {#}
+{#                if (e.keyCode == 13)#}
+{#                    $('#option').click();#}
+{#            });#}
+{#        });#}
+{#    </script>#}
 
     </html>
-    {% endblock %}
+{% endblock %}

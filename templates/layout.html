@@ -17,13 +17,10 @@
               <a class="navbar-brand" href={{ url_for('all_tents') }}>Duke Tents</a>
           </div>
           <ul class="nav navbar-nav">
-            <li><a href=http://www.kvillenation.com>Kville Nation</a></li>
+            <li><a href="http://www.kvillenation.com" target="_blank">Kville Nation</a></li>
           </ul>
       </div>
   </nav>
-    <h1>
-        <a href={{ url_for('all_tents') }}>Tents @ Duke</a>
-    </h1>
     <h2 id="heading">{% block heading %}{% endblock %}</h2>
     {% block content %}{% endblock %}
 </body>

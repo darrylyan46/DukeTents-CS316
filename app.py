@@ -4,6 +4,7 @@ from icsParse import readFile
 import os
 import models
 import forms
+import os
 import queries
 
 import httplib2
@@ -96,10 +97,11 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
     else:
-        #iffy..what goes here?
-        tentid = queries.getTentFromUsername(db, str(request.form['username']))
-        tenters = queries.getTentMembers(db, tentid)
-        return render_template('tentProfile.html', tent=tentid, tenters=tenters)
+        return redirect(url_for('all_tents'))
+        # tentid = queries.getTentFromUsername(db,str(request.form['username']))
+        # tenters = queries.getTentMembers(db, tentid)
+        # return render_template('tentProfile.html', tent=tentid, tenters=tenters)
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
