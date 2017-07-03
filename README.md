@@ -1,7 +1,7 @@
 # DukeTents (DB Project for COMPSCI316)
-A Flask web applciation that organizes and visualizes calendar data 
+A Flask web application that organizes and visualizes calendar data 
 from iCalendar files and Google Calendar for the Duke Men's Basketball 
-tenting tradition in a user-friendly web-interface.
+tenting tradition in a user-friendly web interface.
 
 ## Motivation
 Planning a schedule for large groups of students of 10-12 for the tenting tradition
