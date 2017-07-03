@@ -1,27 +1,25 @@
-from sqlalchemy import sql, orm
+from sqlalchemy import sql
 from app import db
 
 class Tent(db.Model):
-    __tablename__ = 'tent'
     id = db.Column('id', db.Integer, primary_key=True)
     name = db.Column('name', db.String(20))
     color = db.Column('color', db.String(5))
-    member = orm.relationship('Member_In_Tent')
+    member = db.relationship('Member_In_Tent')
 
     def __init__(self, name, color):
         self.name = name
         self.color = color
 
 class Member(db.Model):
-    __tablename__ = 'member'
     id = db.Column('id', db.Integer, primary_key=True)
     email = db.Column('email', db.String(30))
     name = db.Column('name', db.String(20))
     hours_logged = db.Column('hours_logged', db.Integer)
     games_attended = db.Column('games_attended', db.Integer)
     permissions = db.Column('permissions', db.Boolean)
-    tent = orm.relationship('Member_In_Tent')
-    attends = orm.relationship('Member_Attends_Games')
+    tent = db.relationship('Member_In_Tent')
+    attends = db.relationship('Member_Attends_Games')
 
     def __init__(self, name, permissions):
         self.name = name
@@ -30,7 +28,6 @@ class Member(db.Model):
         self.games_Attended = 0
 
 class Availability(db.Model):
-    __tablename__ = 'availability'
     member_id = db.Column('member_id', db.Integer, db.ForeignKey('member.id'),
                          primary_key=True)
     start_time = db.Column('start_time', db.String(30), primary_key=True)
@@ -44,14 +41,12 @@ class Availability(db.Model):
         self.shift = shift
 
 class AttendanceGames(db.Model):
-    __tablename__ = 'attendanceGames'
     name = db.Column('name', db.String(30), primary_key=True)
     date = db.Column('date', db.String(30))
     time = db.Column('time', db.String(30))
-    member = orm.relationship('Member_Attends_Games')
+    member = db.relationship('Member_Attends_Games')
 
 class Member_In_Tent(db.Model):
-    __tablename__ = 'member_in_tent'
     tent_id = db.Column('tent_id', db.Integer, db.ForeignKey('tent.id'),
                        primary_key=True)
     member_id = db.Column('member_id', db.Integer, db.ForeignKey('member.id'),

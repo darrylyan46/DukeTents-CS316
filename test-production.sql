@@ -8,7 +8,7 @@ CREATE TABLE Tent
 
 CREATE TABLE Member
 (id SERIAL PRIMARY KEY NOT NULL,
- email VARCHAR(30) NOT NULL,
+ email VARCHAR(30),
  name VARCHAR(30) NOT NULL,
  hours_logged REAL NOT NULL,
  games_attended INTEGER NOT NULL,

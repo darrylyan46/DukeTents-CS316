@@ -15,7 +15,7 @@ def getTentMembers(db, tid):
 
 def getTent(db, tid):
     '''Returns Tent tuple with id = tid'''
-    return db.session.query(models.Tent).filter(models.Tent.id == tid).one()
+    return db.session.query(models.Tent).filter(models.Tent.id == tid).first()
 
 def getTentFromUsername(db, uid):
     '''Returns Tent tuple from User id = uid'''
@@ -31,7 +31,7 @@ def getIdFromEmail(db, email):
 
 def getMemberFromEmail(db, email):
     '''Returns tuple of matching Member from email attribute'''
-    return db.session.query(models.Member).filter(models.Member.email == email).one()
+    return db.session.query(models.Member).filter(models.Member.email == email).first()
 
 def checkAvailability(db, mid, startTime, endTime):
     ''' Returns boolean value indicating whether Availability with parameters exist'''
@@ -46,7 +46,7 @@ def memberExists(db, mid):
 
 def getMember(db, uid):
     '''Returns Member tuple with id = uid'''
-    return db.session.query(models.Member).filter(models.Member.id == uid).one()
+    return db.session.query(models.Member).filter(models.Member.id == uid).first()
 
 def getMemberAttendedGames(db, uid):
     '''Returns list of AttendanceGames tuples that Member attended with id = uid'''

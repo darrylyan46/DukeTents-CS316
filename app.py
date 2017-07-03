@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from icsParse import readFile
 import os
 import models
-import forms
 import os
 import queries
 
@@ -50,7 +49,10 @@ def all_tents():
 
 @app.route('/logout')
 def logout():
-    session.pop('username')
+    if session.has_key('username'):
+        session.pop('username')
+    if session.has_key('uid'):
+        session.pop('uid')
     return redirect(url_for('index'))
 
 @app.route('/googleauth')
@@ -161,7 +163,10 @@ def signup():
     if request.method == 'GET':
         return render_template('signup.html')
     elif request.method == 'POST':
-        email = session['username']
+        if session.has_key('username'):
+            email = session['username']
+        else:
+            email = None
         name = request.form['name']
         tent_id = request.form['tentid']
         if request.form.get('captain') == "y":
@@ -171,6 +176,7 @@ def signup():
         tentname = request.form['tentName']
         color = request.form['color']
         uid = queries.insertNewUser(db, email, name, permissions, tent_id, color, tentname)
+        session['uid'] = uid
         tid = queries.getTentFromUsername(db, uid).tent_id
         return redirect(url_for('tentProfile', tentid=tid))
 
