@@ -66,7 +66,7 @@ as the app will not function otherwise.
 * [Python 2](https://www.python.org/downloads/), using [`iCalendar`](https://icalendar.readthedocs.io/en/latest/) and `datetime` modules
 * HTML/CSS and Javascript
 
-##Authors
+## Authors
 * [Darryl Yan](https://github.com/darrylyan46) - primary contributer, full-stack development and SQL
 * [Ian Hua](https://github.com/xh47) - SQL
 * Joy Kim - OAuth service
